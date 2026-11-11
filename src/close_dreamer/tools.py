@@ -224,3 +224,41 @@ def _match(rel: str, pattern: str) -> bool:
     if pattern.startswith("**/") and fnmatch.fnmatch(rel, pattern[3:]):
         return True
     return "/" not in pattern and fnmatch.fnmatch(rel.rsplit("/", 1)[-1], pattern)
+
+
+class MultiTools:
+    """Read-only tools over several mounted folders at once (for example /sources and /playbook).
+
+    read routes by path prefix; glob and grep search every mount unless the pattern names one.
+    """
+
+    def __init__(self, mounts: list[FileTools]):
+        self.mounts = mounts
+        self.read_only = True
+
+    def definitions(self) -> list[dict]:
+        roots = " and ".join(f"{m.mount}/" for m in self.mounts)
+        defs = []
+        for d in self.mounts[0].definitions():
+            if d["name"] in ("read", "glob", "grep"):
+                d = {**d, "description": d["description"].replace(f"{self.mounts[0].mount}/", roots)}
+                defs.append(d)
+        return defs
+
+    def _owner(self, path: str) -> FileTools | None:
+        p = (path or "").replace("\\", "/")
+        return next((m for m in self.mounts if p == m.mount or p.startswith(m.mount + "/")), None)
+
+    def call(self, name: str, args: dict) -> tuple[str, bool]:
+        if name not in ("read", "glob", "grep") or not isinstance(args, dict):
+            return f"Unknown or disabled tool: {name}", True
+        if name == "read":
+            owner = self._owner(args.get("path", ""))
+            if owner is None:
+                return f"Error: path must start with one of {[m.mount for m in self.mounts]}", True
+            return owner.call(name, args)
+        target = args.get("pattern", "") if name == "glob" else args.get("glob", "")
+        owner = self._owner(target)
+        outs = [owner.call(name, args)] if owner else [m.call(name, args) for m in self.mounts]
+        texts = [t for t, _ in outs if not t.startswith("(no ")]
+        return ("\n".join(texts) if texts else outs[0][0]), any(e for _, e in outs)

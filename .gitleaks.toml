@@ -7,4 +7,4 @@ useDefault = true
 [allowlist]
 description = "Planted demo credential in synthetic transcripts and test fixtures"
 regexes = ['''Tw!nPeaks-Demo-2026''']
-paths = ['''data/transcripts/11-sep-icr-load-failure\.txt''', '''tests/fixtures/playbook_bad/.*''', '''data/ground_truth\.yaml''']
+paths = ['''data/corpus/assistant-sessions/.*.txt''', '''tests/fixtures/playbook_bad/.*''', '''data/ground_truth.yaml''', '''notebooks/.*.ipynb''']

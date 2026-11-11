@@ -96,13 +96,14 @@ def dream(
     extra_secrets: list[str] | None = None,
     extra_injections: list[str] | None = None,
     on_event: Callable[[str], None] | None = print,
+    announce_estimate: bool = True,
 ) -> DreamResult:
     """Dream over `transcripts` into the playbook folder, updating it in place (a snapshot is kept)."""
     models = models or Models()
     if not transcripts:
         raise ValueError("No transcripts selected: nothing to dream over.")
     est, text = estimate(transcripts, playbook, models)
-    if on_event:
+    if on_event and announce_estimate:
         on_event(text)
     if est > budget_usd:
         raise ValueError(f"The estimate (${est:.2f}) is over the budget (${budget_usd:.2f}); nothing was sent.")
@@ -123,8 +124,8 @@ def dream(
 
     def analyze(t: Transcript) -> str:
         user = (
-            f"Your assigned transcript is {t.name}. Dream over it into the playbook at {MEM_DIR}.\n\n"
-            f'<transcript name="{t.name}">\n{t.text}\n</transcript>'
+            f"Your assigned source is {t.name}. Dream over it into the playbook at {MEM_DIR}.\n\n"
+            f'<source name="{t.name}" kind="{t.kind}" close_period="{t.period or "undated"}">\n{t.text}\n</source>'
         )
         out = run_agent(
             client,
@@ -139,14 +140,16 @@ def dream(
         )
         return out.text + (" [stopped at the turn limit]" if out.hit_turn_limit else "")
 
-    # Phase 1: analyze, one close period at a time (pasted notes first). Sessions within a period run in
-    # parallel; a later close always sees what the earlier closes recorded, so it can supersede them.
-    groups: dict[str, list[Transcript]] = {}
+    # Phase 1: analyze, one close period at a time, so a later close always sees what earlier closes recorded
+    # and can supersede it. Within a period, two waves: what people said and decided (policies, meetings,
+    # sessions) first, then the ERP exports, which confirm or correct it. Files within a wave run in parallel.
+    groups: dict[tuple[str, int], list[Transcript]] = {}
     for t in sorted(transcripts, key=lambda t: (t.period or "", t.name)):
-        groups.setdefault(t.period or "notes", []).append(t)
-    for period, group in groups.items():
+        groups.setdefault((t.period or "undated", 1 if t.kind == "erp" else 0), []).append(t)
+    for (period, wave), group in sorted(groups.items()):
         if on_event:
-            on_event(f"Phase 1, {period}: {len(group)} analyzers, up to {concurrency} at a time")
+            label = "ERP evidence" if wave else "discussion and policy"
+            on_event(f"Phase 1, {period} {label}: {len(group)} analyzers, up to {concurrency} at a time")
         with ThreadPoolExecutor(max_workers=max(1, concurrency)) as pool:
             futures = {pool.submit(analyze, t): t for t in group}
             for fut in as_completed(futures):

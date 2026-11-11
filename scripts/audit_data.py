@@ -1,11 +1,13 @@
-"""Audit the synthetic data: every eval answer and fact must be backed by a transcript.
+"""Audit the synthetic corpus: every eval answer and fact must be backed by a source file.
 
 Checks:
-1. Every `evidence` string in ground_truth.yaml and eval_questions.yaml appears in the named file
-   (whitespace-insensitive).
-2. Every superseded fact is replaced by a fact whose evidence comes from a later session.
-3. The planted injected instruction and secret exist in their source transcripts (so the safety
-   checks on dreamed memory are meaningful).
+1. Every `evidence` text in ground_truth.yaml and eval_questions.yaml appears in the file its manifest key
+   names (whitespace-insensitive; meeting transcripts are compared on their spoken text, without cue ids,
+   timestamps or speaker tags).
+2. Every superseded fact is replaced by a fact that became true later.
+3. The planted injected instructions and secret exist in their sources, so the safety checks on dreamed
+   memory are meaningful.
+4. Every corpus file gets a close period.
 
 Run:  python scripts/audit_data.py      (exit code 1 on any failure)
 """
@@ -19,29 +21,32 @@ from pathlib import Path
 import yaml
 
 DATA = Path(__file__).resolve().parent.parent / "data"
-TRANSCRIPTS = DATA / "transcripts"
+CORPUS = DATA / "corpus"
+sys.path.insert(0, str(DATA.parent / "src"))
 
 
-def squash(text: str) -> str:
+def normalize(path: Path) -> str:
+    text = path.read_text(encoding="utf-8")
+    if path.suffix == ".vtt":
+        text = " ".join(re.findall(r"<v [^>]+>(.*?)</v>", text))
     return re.sub(r"\s+", " ", text).strip()
 
 
-def session_order(name: str) -> int:
-    return int(name.split("-", 1)[0])
-
-
 def main() -> int:
-    texts = {p.name: squash(p.read_text(encoding="utf-8")) for p in TRANSCRIPTS.iterdir()}
+    from close_dreamer import transcripts as tx
+
+    manifest = yaml.safe_load((DATA / "manifest.yaml").read_text(encoding="utf-8"))
     truth = yaml.safe_load((DATA / "ground_truth.yaml").read_text(encoding="utf-8"))
     evals = yaml.safe_load((DATA / "eval_questions.yaml").read_text(encoding="utf-8"))
+    texts = {key: normalize(CORPUS / v["file"]) for key, v in manifest.items()}
     problems: list[str] = []
 
     def check(owner: str, evidence: list) -> None:
-        for fname, snippet in evidence:
-            if fname not in texts:
-                problems.append(f"{owner}: file not found: {fname}")
-            elif squash(snippet) not in texts[fname]:
-                problems.append(f"{owner}: evidence not found in {fname}: {snippet!r}")
+        for key, snippet in evidence:
+            if key not in texts:
+                problems.append(f"{owner}: unknown manifest key {key}")
+            elif re.sub(r"\s+", " ", snippet).strip() not in texts[key]:
+                problems.append(f"{owner}: evidence not found in {key}: {snippet!r}")
 
     facts = {f["id"]: f for f in truth["facts"]}
     for f in truth["facts"]:
@@ -50,27 +55,29 @@ def main() -> int:
             newer = facts.get(newer_id)
             if not newer:
                 problems.append(f"fact {f['id']}: superseded_by {newer_id} does not exist")
-                continue
-            old_max = max(session_order(e[0]) for e in f["evidence"])
-            new_max = max(session_order(e[0]) for e in newer["evidence"])
-            if new_max <= old_max:
-                problems.append(f"fact {f['id']}: replacement {newer_id} is not from a later session")
+            elif str(newer["valid_from"]) <= str(f["valid_from"]):
+                problems.append(f"fact {f['id']}: replacement {newer_id} is not later")
 
     for q in evals["questions"]:
         check(f"question {q['id']}", q["evidence"])
+    ids = [q["id"] for q in evals["questions"]]
+    if len(ids) != len(set(ids)):
+        problems.append("duplicate question ids")
 
-    for key in ("injected_instruction", "secret"):
-        item = truth[key]
-        if squash(item["text"]) not in texts.get(item["source"], ""):
-            problems.append(f"{key}: not planted in {item['source']}")
+    for item in truth["injected_instructions"] + [truth["secret"]]:
+        if re.sub(r"\s+", " ", item["text"]) not in texts.get(item["source"], ""):
+            problems.append(f"probe not planted in {item['source']}: {item['text']!r}")
 
-    n_facts, n_q = len(truth["facts"]), len(evals["questions"])
+    undated = [t.name for t in tx.load(CORPUS) if t.period is None]
+    if undated:
+        problems.append(f"files without a close period: {undated}")
+
     if problems:
         print("\n".join(f"FAIL {p}" for p in problems))
         return 1
     print(
-        f"OK: {n_facts} facts and {n_q} questions are supported by {len(texts)} transcript files; "
-        "safety probes planted."
+        f"OK: {len(truth['facts'])} facts and {len(ids)} questions are supported by {len(texts)} corpus files; "
+        "safety probes planted; every file has a close period."
     )
     return 0
 

@@ -1,0 +1,3 @@
+Period,CompanyCode,Partner,DocCoCd,DocPartner,Reference,AmountCoCdUSD,AmountPartnerUSD,Status,Note
+2026-05,1000,2000,1900021877,1800004102,IC-2000-0526,228330.00,-227522.88,Difference,"Mgmt fee May (EUR 212,400.00)"
+2026-05,1000,3000,1900021902,3400016811,IC-3000-0526,-70214.95,70214.95,Matched,Tooling services May

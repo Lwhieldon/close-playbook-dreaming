@@ -56,3 +56,19 @@ def test_size_cap(fs):
 def test_bad_arguments_are_errors_not_crashes(fs):
     text, err = fs.call("read", {"nope": 1})
     assert err
+
+
+def test_multitools_routes_reads_and_searches_all_mounts(tmp_path):
+    from close_dreamer.tools import MultiTools
+
+    pb = FileTools(tmp_path / "pb", mount="/playbook", read_only=True)
+    src = FileTools(tmp_path / "src", mount="/sources", read_only=True)
+    (tmp_path / "pb" / "a.md").write_text("cutoff BD2", encoding="utf-8")
+    (tmp_path / "src" / "b.csv").write_text("cutoff,BD3", encoding="utf-8")
+    both = MultiTools([pb, src])
+    assert {d["name"] for d in both.definitions()} == {"read", "glob", "grep"}
+    hits, _ = both.call("grep", {"pattern": "cutoff"})
+    assert "/playbook/a.md" in hits and "/sources/b.csv" in hits
+    assert "BD3" in both.call("read", {"path": "/sources/b.csv"})[0]
+    assert both.call("read", {"path": "/etc/x"})[1] is True
+    assert both.call("write", {"path": "/playbook/x.md", "content": "x"})[1] is True

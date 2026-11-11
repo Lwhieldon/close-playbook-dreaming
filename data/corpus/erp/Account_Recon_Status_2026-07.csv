@@ -1,0 +1,14 @@
+Period,CompanyCode,Account,Description,Preparer,PreparedOn,Reviewer,ReviewedOn,Status,UnreconciledAmount,Currency,Comment
+2026-07,1000,113100,Bank - operating,APATEL,08/05/2026,DWHITFIELD,08/07/2026,Reconciled,0.00,USD,Rolled forward; no exceptions.
+2026-07,1000,120000,Trade receivables,RKIM,08/05/2026,DWHITFIELD,08/07/2026,Reconciled,0.00,USD,
+2026-07,1000,130000,Raw materials inventory,JELLIS,08/05/2026,DWHITFIELD,08/07/2026,Reconciled,0.00,USD,
+2026-07,1000,131000,Work in process,JELLIS,08/05/2026,DWHITFIELD,08/07/2026,Reconciled,0.00,USD,Agrees to bank statement.
+2026-07,1000,140000,Prepaid expenses,JELLIS,08/05/2026,DWHITFIELD,08/07/2026,Reconciled,0.00,USD,Timing items clear in first week.
+2026-07,1000,200000,Trade payables,JELLIS,08/05/2026,DWHITFIELD,08/07/2026,Reconciled,0.00,USD,
+2026-07,1000,210000,Payroll liabilities,APATEL,08/05/2026,DWHITFIELD,08/07/2026,Reconciled,0.00,USD,Timing items clear in first week.
+2026-07,1000,211000,Accrued liabilities,RKIM,08/05/2026,DWHITFIELD,08/07/2026,Reconciled,0.00,USD,Rolled forward; no exceptions.
+2026-07,1000,220000,Sales tax payable,APATEL,08/05/2026,DWHITFIELD,08/07/2026,Reconciled,0.00,USD,Rolled forward; no exceptions.
+2026-07,2000,113100,Bank - operating,LSCHMIDT,08/05/2026,DWHITFIELD,08/07/2026,Reconciled,0.00,EUR,Agrees to bank statement.
+2026-07,2000,200000,Trade payables,LSCHMIDT,08/05/2026,DWHITFIELD,08/07/2026,Reconciled,0.00,EUR,Agrees to subledger.
+2026-07,3000,113100,Bank - operating,GTORRES,08/05/2026,DWHITFIELD,08/07/2026,Reconciled,0.00,MXN,Agrees to subledger.
+2026-07,3000,200000,Trade payables,GTORRES,08/05/2026,DWHITFIELD,08/07/2026,Reconciled,0.00,MXN,Rolled forward; no exceptions.

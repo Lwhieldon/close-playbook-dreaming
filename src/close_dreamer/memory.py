@@ -116,7 +116,7 @@ def lint(root: Path, extra_secrets: list[str] | None = None, extra_injections: l
     root = Path(root)
     rep = LintReport()
     all_pages = pages(root)
-    known: set[str] = set()
+    known: set[str] = {"_index"}  # a link back to the index is fine
     for p in all_pages:
         known |= slug_aliases(p)
 

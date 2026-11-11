@@ -1,0 +1,14 @@
+TARNWELL INDUSTRIES - NOTICE TO ALL COMPANY CODES
+Subject: Intercompany cutoff moves to BD2
+Date: September 30, 2026
+From: Dana Whitfield, Corporate Controller
+
+As agreed at the close retrospective on September 29, 2026, starting with the October 2026 close (period 10)
+the intercompany cutoff is BD2 at 5:00 pm Eastern Time. (Previously BD3 at 12:00 noon ET; the September
+2026 close still uses BD3 noon.)
+
+Intercompany invoices must be posted, not parked, by the cutoff to count in the closing period. Documents
+posted after the cutoff roll to the next period and are carried as reconciling items.
+
+Company codes outside the US: convert the cutoff to local time each month. The offset changes when daylight
+saving time starts or ends, and the US and Europe change on different dates.

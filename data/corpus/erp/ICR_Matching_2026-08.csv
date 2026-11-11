@@ -1,0 +1,3 @@
+Period,CompanyCode,Partner,DocCoCd,DocPartner,Reference,AmountCoCdUSD,AmountPartnerUSD,Status,Note
+2026-08,1000,2000,1900023311,1800004377,IC-2000-0826,231770.88,-231770.88,Matched,Mgmt fee Aug
+2026-08,1000,3000,1900023356,3400017931,IC-3000-0826,-75138.30,75138.30,Matched,Matched after repost 09/02 (orig 3400017915 in P09)

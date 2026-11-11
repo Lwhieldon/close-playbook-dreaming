@@ -1,0 +1,5 @@
+Plant,Period,Material,Description,Qty,UoM,StdPrice,InvoicePrice,PPV,Currency
+1100,2026-06,R-4410,"Stainless bar 316, 40 mm",84100,KG,8.40,8.52,10092.00,USD
+1100,2026-06,R-3120,Carbon steel plate 12 mm,40600,KG,1.95,1.95,0.00,USD
+1100,2026-06,C-1180,Pump housing casting,910,EA,212.00,211.40,-546.00,USD
+1100,2026-06,S-0451,Mechanical seal kit,1620,EA,38.20,38.20,0.00,USD

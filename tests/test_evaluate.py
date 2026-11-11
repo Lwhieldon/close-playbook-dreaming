@@ -10,7 +10,7 @@ from close_dreamer.usage import UsageTracker
 
 def test_questions_load_and_have_unique_ids():
     qs = ev.load_questions(config.DATA / "eval_questions.yaml")
-    assert len(qs) == 20 and len({q["id"] for q in qs}) == 20
+    assert len(qs) == 32 and len({q["id"] for q in qs}) == 32
 
 
 def test_must_include_is_case_insensitive():
@@ -31,22 +31,22 @@ def test_run_with_fake_client(tmp_path):
     graded, tracker = ev.run(
         FakeClient(script),
         qs,
-        transcripts_dir=config.TRANSCRIPTS,
+        sources_dir=config.CORPUS,
         playbook_dir=tmp_path,
         budget_usd=1.0,
         concurrency=2,
         on_event=None,
     )
-    assert len(graded) == 6
+    assert len(graded) == 8
     assert all(g.judge_score == 1 for g in graded)
     table = ev.summarize(graded, tracker)
-    assert "| none | transcripts | playbook |" in table
+    assert "| none | sources | playbook | both |" in table
     assert ev.save(graded, tracker, tmp_path / "runs").exists()
 
 
 def test_playbook_condition_requires_a_playbook(tmp_path):
     with pytest.raises(FileNotFoundError):
-        ev.run(FakeClient(lambda kw: None), [], transcripts_dir=config.TRANSCRIPTS, playbook_dir=tmp_path / "none")
+        ev.run(FakeClient(lambda kw: None), [], sources_dir=config.CORPUS, playbook_dir=tmp_path / "none")
 
 
 def test_unparseable_judge_scores_zero():

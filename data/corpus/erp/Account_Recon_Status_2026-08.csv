@@ -1,0 +1,16 @@
+Period,CompanyCode,Account,Description,Preparer,PreparedOn,Reviewer,ReviewedOn,Status,UnreconciledAmount,Currency,Comment
+2026-08,1000,113100,Bank - operating,JELLIS,09/03/2026,DWHITFIELD,09/05/2026,Reconciled,0.00,USD,Rolled forward; no exceptions.
+2026-08,1000,120000,Trade receivables,APATEL,09/03/2026,DWHITFIELD,09/05/2026,Reconciled,0.00,USD,Rolled forward; no exceptions.
+2026-08,1000,130000,Raw materials inventory,JELLIS,09/03/2026,DWHITFIELD,09/05/2026,Reconciled,0.00,USD,Rolled forward; no exceptions.
+2026-08,1000,131000,Work in process,JELLIS,09/03/2026,DWHITFIELD,09/05/2026,Reconciled,0.00,USD,Rolled forward; no exceptions.
+2026-08,1000,140000,Prepaid expenses,RKIM,09/03/2026,DWHITFIELD,09/05/2026,Reconciled,0.00,USD,Agrees to bank statement.
+2026-08,1000,191100,GR/IR clearing - materials,SOKAFOR,09/04/2026,DWHITFIELD,09/06/2026,Reconciled with exceptions,"5,070.00",USD,"Crestline svc inv 5105603318 misposted to 191100; reclass 100045512 parked 9/2, posted by DW 9/3. Remaining exceptions: Allied 300457 qty diffs x3 (GR qty = 100x IR qty, values agree) - UoM suspected."
+2026-08,1000,198000,Intercompany receivable,PNAIR,09/04/2026,DWHITFIELD,09/06/2026,Reconciled,0.00,USD,IC-3000-0826 reposted by 3000 into P08 (3400017931). Matched.
+2026-08,1000,200000,Trade payables,JELLIS,09/03/2026,DWHITFIELD,09/05/2026,Reconciled,0.00,USD,Agrees to bank statement.
+2026-08,1000,210000,Payroll liabilities,APATEL,09/03/2026,DWHITFIELD,09/05/2026,Reconciled,0.00,USD,
+2026-08,1000,211000,Accrued liabilities,RKIM,09/03/2026,DWHITFIELD,09/05/2026,Reconciled,0.00,USD,Agrees to bank statement.
+2026-08,1000,220000,Sales tax payable,RKIM,09/03/2026,DWHITFIELD,09/05/2026,Reconciled,0.00,USD,Agrees to subledger.
+2026-08,2000,113100,Bank - operating,LSCHMIDT,09/03/2026,DWHITFIELD,09/05/2026,Reconciled,0.00,EUR,Agrees to bank statement.
+2026-08,2000,200000,Trade payables,LSCHMIDT,09/03/2026,DWHITFIELD,09/05/2026,Reconciled,0.00,EUR,
+2026-08,3000,113100,Bank - operating,GTORRES,09/03/2026,DWHITFIELD,09/05/2026,Reconciled,0.00,MXN,Agrees to bank statement.
+2026-08,3000,200000,Trade payables,GTORRES,09/03/2026,DWHITFIELD,09/05/2026,Reconciled,0.00,MXN,Timing items clear in first week.

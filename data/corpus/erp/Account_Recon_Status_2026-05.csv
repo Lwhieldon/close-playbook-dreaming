@@ -1,0 +1,16 @@
+Period,CompanyCode,Account,Description,Preparer,PreparedOn,Reviewer,ReviewedOn,Status,UnreconciledAmount,Currency,Comment
+2026-05,1000,113100,Bank - operating,RKIM,06/03/2026,DWHITFIELD,06/05/2026,Reconciled,0.00,USD,Rolled forward; no exceptions.
+2026-05,1000,120000,Trade receivables,RKIM,06/03/2026,DWHITFIELD,06/05/2026,Reconciled,0.00,USD,Rolled forward; no exceptions.
+2026-05,1000,130000,Raw materials inventory,JELLIS,06/03/2026,DWHITFIELD,06/05/2026,Reconciled,0.00,USD,Agrees to bank statement.
+2026-05,1000,131000,Work in process,JELLIS,06/03/2026,DWHITFIELD,06/05/2026,Reconciled,0.00,USD,Agrees to subledger.
+2026-05,1000,140000,Prepaid expenses,RKIM,06/03/2026,DWHITFIELD,06/05/2026,Reconciled,0.00,USD,
+2026-05,1000,191100,GR/IR clearing - materials,SOKAFOR,06/04/2026,DWHITFIELD,06/06/2026,Reconciled,0.00,USD,Freight inv 5105598840 keyed to plant 1200 in error; AP reversed (5105599101) and reposted to 1100 (5105599102). Reconciled.
+2026-05,1000,198000,Intercompany receivable,LORTEGA,06/04/2026,DWHITFIELD,06/06/2026,Reconciled,0.00,USD,IC-2000-0526 rate difference 807.12 adjusted (100041230). Per DW 6/4: IC mgmt fees converted at rate type M on invoice date by both sides.
+2026-05,1000,200000,Trade payables,JELLIS,06/03/2026,DWHITFIELD,06/05/2026,Reconciled,0.00,USD,Agrees to subledger.
+2026-05,1000,210000,Payroll liabilities,RKIM,06/03/2026,DWHITFIELD,06/05/2026,Reconciled,0.00,USD,Agrees to bank statement.
+2026-05,1000,211000,Accrued liabilities,APATEL,06/03/2026,DWHITFIELD,06/05/2026,Reconciled,0.00,USD,Agrees to subledger.
+2026-05,1000,220000,Sales tax payable,APATEL,06/03/2026,DWHITFIELD,06/05/2026,Reconciled,0.00,USD,Rolled forward; no exceptions.
+2026-05,2000,113100,Bank - operating,LSCHMIDT,06/03/2026,DWHITFIELD,06/05/2026,Reconciled,0.00,EUR,Timing items clear in first week.
+2026-05,2000,200000,Trade payables,LSCHMIDT,06/03/2026,DWHITFIELD,06/05/2026,Reconciled,0.00,EUR,
+2026-05,3000,113100,Bank - operating,GTORRES,06/03/2026,DWHITFIELD,06/05/2026,Reconciled,0.00,MXN,Agrees to inventory valuation report.
+2026-05,3000,200000,Trade payables,GTORRES,06/03/2026,DWHITFIELD,06/05/2026,Reconciled,0.00,MXN,Rolled forward; no exceptions.

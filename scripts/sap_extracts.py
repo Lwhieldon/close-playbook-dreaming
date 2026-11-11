@@ -234,7 +234,7 @@ def order_variances(*, plant: str, period: str, orders: list[tuple]) -> str:
     """Production order variance report (KKS2/KKBC-style). orders: (order, material, target, actual,
     variance, settled)."""
     out = [
-        f"Variance Calculation: Production Orders   Plant {plant}   Period {period}   Version 000",
+        f"Variance Calculation: Production Orders   Plant {plant}   Period {period}   Version 000   Currency USD",
         "-" * 104,
         "| Order      | Material  |     Target cost |     Actual cost |        Variance |  Settled to 530000 |",
         "-" * 104,
@@ -285,4 +285,108 @@ def ppv_report(*, plant: str, period: str, rows: list[tuple]) -> str:
         out.append(f"| {mat:<8} | {desc:<27} | {qty:>6} | {uom:<3} | {std:>9} | {inv:>10} | {money(ppv):>14} |")
     out.append("-" * 112)
     out.append(f"* Total PPV {money(total)} USD (unfavorable = positive)")
+    return "\n".join(out)
+
+
+# --- Routine output that real sessions are full of (noise around the facts that matter) ----------------
+
+TB_ACCOUNTS = [
+    ("100100", "Petty cash"),
+    ("113200", "Bank - payroll"),
+    ("120000", "Trade receivables"),
+    ("121000", "Allowance for doubtful accounts"),
+    ("140000", "Prepaid expenses"),
+    ("150000", "Land"),
+    ("151000", "Buildings"),
+    ("152000", "Machinery and equipment"),
+    ("159000", "Accumulated depreciation"),
+    ("200000", "Trade payables"),
+    ("210000", "Payroll liabilities"),
+    ("220000", "Sales tax payable"),
+    ("230000", "Customer deposits"),
+    ("250000", "Long-term debt"),
+    ("300000", "Common stock"),
+    ("310000", "Retained earnings"),
+    ("400000", "Product revenue"),
+    ("401000", "Service revenue"),
+    ("410000", "Sales returns and allowances"),
+    ("500000", "Cost of goods sold"),
+    ("505000", "Freight in"),
+    ("510000", "Direct labor"),
+    ("515000", "Manufacturing overhead absorbed"),
+    ("600000", "Salaries"),
+    ("605000", "Benefits"),
+    ("620000", "Rent"),
+    ("630000", "Utilities"),
+    ("640000", "Repairs and maintenance"),
+    ("650000", "Travel"),
+    ("660000", "Professional fees"),
+    ("670000", "IT services"),
+    ("680000", "Insurance"),
+    ("700000", "Interest expense"),
+    ("710000", "Bank charges"),
+    ("800000", "Income tax expense"),
+]
+
+JOB_NAMES = [
+    "FI_AP_PAYMENT_RUN",
+    "FI_AR_DUNNING",
+    "MM_MRP_RUN_{plant}",
+    "CO_ASSESSMENT_CC",
+    "CO_DISTRIBUTION",
+    "FI_BANK_STMT_IMPORT",
+    "FI_LOCKBOX",
+    "SD_BILLING_DUE",
+    "MM_GR_IR_REPORT",
+    "BW_EXTRACT_FI_GL",
+    "BW_EXTRACT_CO_PA",
+    "FI_RECURRING_ENTRIES",
+    "FI_ACCRUAL_REVERSAL",
+    "HR_PAYROLL_POST",
+    "MM_INVENTORY_SNAPSHOT",
+    "QM_LOT_CLOSE",
+    "PM_ORDER_SETTLE",
+    "FI_TAX_REPORT",
+    "CO_PC_ACTUAL_COSTING",
+    "FI_INTEREST_CALC",
+]
+
+
+def trial_balance(*, seed: int, company_code: str, period: str, rows: int = 34) -> str:
+    """A trial balance excerpt (S_ALR_87012277-style). Accounts that carry story facts are left out."""
+    rng = random.Random(seed)
+    name, cur = COMPANY_CODES[company_code]
+    out = [
+        "G/L Account Balances",
+        f"Company code {company_code} {name}   Fiscal year 2026   Period {period}   Currency {cur}",
+        "-" * 104,
+        "| G/L acct | Description                      |    Balance carryfwd |    Period debit |   Period credit |",
+        "-" * 104,
+    ]
+    for acct, desc in TB_ACCOUNTS[:rows]:
+        bf = Decimal(rng.randint(-90_000_000, 90_000_000)) / 100
+        dr = Decimal(rng.randint(0, 40_000_000)) / 100
+        cr = Decimal(rng.randint(0, 40_000_000)) / 100
+        out.append(f"| {acct}   | {desc:<32} | {money(bf):>19} | {money(dr):>15} | {money(cr):>15} |")
+    out.append("-" * 104)
+    out.append("* Excerpt; balances shown before consolidation adjustments")
+    return "\n".join(out)
+
+
+def job_overview(*, seed: int, date: str, plant: str = "1100", rows: int = 18) -> str:
+    """Background job overview (SM37-style). All jobs finished; this is the routine noise of a close day."""
+    rng = random.Random(seed)
+    out = [
+        f"Job Overview   Date {date}   User *   Status: scheduled, released, ready, active, finished, cancelled",
+        "-" * 96,
+        "| Job name                     | Start time | Duration (s) | Status    | Steps |",
+        "-" * 96,
+    ]
+    names = rng.sample(JOB_NAMES, k=min(rows, len(JOB_NAMES)))
+    for i, n in enumerate(sorted(names)):
+        hh, mm = divmod(60 + i * 17 + rng.randint(0, 9), 60)
+        out.append(
+            f"| {n.format(plant=plant):<28} | {hh:02d}:{mm:02d}:00   | {rng.randint(4, 1900):>12} | finished  | {rng.randint(1, 4):>5} |"
+        )
+    out.append(f"* {len(names)} jobs")
     return "\n".join(out)

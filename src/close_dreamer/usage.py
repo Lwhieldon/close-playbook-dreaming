@@ -112,7 +112,7 @@ def estimate_dream(
         mem * o["cache_write"] + 20 * mem * 1.5 * o["cache_read"] + 20 * 1_500 * o["input"] + 12_000 * o["output"]
     ) / 1e6
     text = (
-        f"Estimate: {len(transcript_chars)} transcripts, {sum(transcript_chars):,} characters, analyzer "
+        f"Estimate: {len(transcript_chars)} sources, {sum(transcript_chars):,} characters, analyzer "
         f"{analyzer_model}, organizer {organizer_model}: about ${total:.2f} (a ceiling, not a quote)"
     )
     return total, text

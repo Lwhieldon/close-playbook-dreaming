@@ -25,7 +25,7 @@ def _probes() -> tuple[list[str], list[str]]:
     if not gt.exists():
         return [], []
     data = yaml.safe_load(gt.read_text(encoding="utf-8"))
-    return [data["secret"]["text"]], [data["injected_instruction"]["text"]]
+    return [data["secret"]["text"]], [i["text"] for i in data["injected_instructions"]]
 
 
 def _state() -> dict:
@@ -42,16 +42,16 @@ def _confirm(prompt: str, yes: bool) -> bool:
 
 
 def _selection(args) -> list[tx.Transcript]:
-    all_t = tx.load(config.TRANSCRIPTS)
+    all_t = tx.load(config.CORPUS)
     after = args.after
     if after is None and not getattr(args, "full", False):
         after = _state().get(str(Path(args.playbook).resolve()))
     return tx.select(all_t, through=args.through, after=after)
 
 
-def cmd_transcripts(args) -> int:
-    for t in tx.load(config.TRANSCRIPTS):
-        print(f"{t.period or 'notes':<8} {t.size:>7,}  {t.name}  {t.title}")
+def cmd_sources(args) -> int:
+    for t in tx.load(config.CORPUS):
+        print(f"{t.period or 'undated':<8} {t.kind:<8} {t.size:>7,}  {t.name}")
     return 0
 
 
@@ -59,18 +59,35 @@ def cmd_estimate(args) -> int:
     from .dream import estimate
 
     chosen = _selection(args)
-    print("\n".join(f"  {t.period or 'notes':<8} {t.name}" for t in chosen) or "  (none selected)")
+    print("\n".join(f"  {t.period or 'undated':<8} {t.kind:<8} {t.name}" for t in chosen) or "  (none selected)")
     print(estimate(chosen, Path(args.playbook), config.Models())[1])
     return 0
 
 
 def cmd_dream(args) -> int:
+    lock = Path(args.playbook).with_suffix(".lock")
+    lock.parent.mkdir(parents=True, exist_ok=True)
+    try:
+        lock.open("x").close()  # fails if another dream holds the lock
+    except FileExistsError:
+        print(
+            f"Another dream is running on this playbook (lock file {lock}). Wait for it to finish; "
+            "if no dream is running (for example after a crash), delete the lock file and retry."
+        )
+        return 1
+    try:
+        return _dream(args)
+    finally:
+        lock.unlink(missing_ok=True)
+
+
+def _dream(args) -> int:
     chosen = _selection(args)
     if not chosen:
-        print("No new transcripts for that range (use --full to re-dream everything).")
+        print("No new sources for that range (use --full to re-dream everything).")
         return 1
-    print("Transcripts to dream over:")
-    print("\n".join(f"  {t.period or 'notes':<8} {t.name}" for t in chosen))
+    print(f"Sources to dream over ({len(chosen)}):")
+    print("\n".join(f"  {t.period or 'undated':<8} {t.kind:<8} {t.name}" for t in chosen))
 
     if args.mode == "managed":
         from . import managed
@@ -107,6 +124,7 @@ def cmd_dream(args) -> int:
         extra_secrets=secrets,
         extra_injections=injections,
         on_event=print if args.verbose else _quiet,
+        announce_estimate=False,
     )
     print(result.report())
     periods = [t.period for t in chosen if t.period]
@@ -159,7 +177,7 @@ def cmd_ask(args) -> int:
             args.condition,
             models=config.Models(),
             tracker=tracker,
-            transcripts_dir=config.TRANSCRIPTS,
+            sources_dir=config.CORPUS,
             playbook_dir=Path(args.playbook),
         )
     )
@@ -187,14 +205,16 @@ def cmd_evaluate(args) -> int:
         client,
         questions,
         conditions=conditions,
-        transcripts_dir=config.TRANSCRIPTS,
+        sources_dir=config.CORPUS,
         playbook_dir=Path(args.playbook),
         budget_usd=args.budget,
         concurrency=args.concurrency,
+        max_turns=args.max_turns,
     )
     print(ev.summarize(graded, tracker))
     print(tracker.table())
-    print(f"Saved: {ev.save(graded, tracker, config.RUNS)}")
+    tag = f"turns{args.max_turns}" if args.max_turns != 12 else ""
+    print(f"Saved: {ev.save(graded, tracker, config.RUNS, tag=tag)}")
     return 0
 
 
@@ -212,15 +232,15 @@ def build_parser() -> argparse.ArgumentParser:
         sp.add_argument("--after", help="Only periods after this one (default: what this playbook already saw)")
         sp.add_argument("--full", action="store_true", help="Ignore what the playbook already saw")
 
-    s = sub.add_parser("transcripts", help="List transcripts and their close periods (free)")
-    s.set_defaults(func=cmd_transcripts)
+    s = sub.add_parser("sources", aliases=["transcripts"], help="List corpus files, kinds and close periods (free)")
+    s.set_defaults(func=cmd_sources)
 
     s = sub.add_parser("estimate", help="Estimate a dream's cost (free)")
     range_args(s)
     playbook_arg(s)
     s.set_defaults(func=cmd_estimate)
 
-    s = sub.add_parser("dream", help="Dream over transcripts into the playbook (paid)")
+    s = sub.add_parser("dream", help="Dream over the close sources into the playbook (paid)")
     range_args(s)
     playbook_arg(s)
     s.add_argument("--mode", choices=["local", "managed"], default="local")
@@ -243,15 +263,16 @@ def build_parser() -> argparse.ArgumentParser:
 
     s = sub.add_parser("ask", help="Ask the close assistant one question (paid)")
     s.add_argument("question")
-    s.add_argument("--condition", choices=["none", "transcripts", "playbook"], default="playbook")
+    s.add_argument("--condition", choices=["none", "sources", "playbook", "both"], default="playbook")
     s.add_argument("--budget", type=float, default=0.25)
     playbook_arg(s)
     s.set_defaults(func=cmd_ask)
 
-    s = sub.add_parser("evaluate", help="Compare no memory, raw transcripts and the playbook (paid)")
-    s.add_argument("--conditions", default="none,transcripts,playbook")
+    s = sub.add_parser("evaluate", help="Compare no memory, raw sources, the playbook, and both (paid)")
+    s.add_argument("--conditions", default="none,sources,playbook,both")
     s.add_argument("--questions", help="Comma-separated question ids (default: all)")
-    s.add_argument("--budget", type=float, default=2.0)
+    s.add_argument("--max-turns", type=int, default=12, help="Tool-using turns per answer (try 3 for a quick run)")
+    s.add_argument("--budget", type=float, default=3.0)
     s.add_argument("--concurrency", type=int, default=4)
     s.add_argument("--yes", action="store_true")
     playbook_arg(s)

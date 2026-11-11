@@ -10,7 +10,8 @@ from dotenv import load_dotenv
 
 REPO = Path(__file__).resolve().parents[2]
 DATA = REPO / "data"
-TRANSCRIPTS = DATA / "transcripts"
+CORPUS = DATA / "corpus"
+TRANSCRIPTS = CORPUS  # older name
 OUTPUT = REPO / "output"
 PLAYBOOK = OUTPUT / "playbook"
 SNAPSHOTS = OUTPUT / "snapshots"

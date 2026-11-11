@@ -1,0 +1,17 @@
+Period,CompanyCode,Account,Description,Preparer,PreparedOn,Reviewer,ReviewedOn,Status,UnreconciledAmount,Currency,Comment
+2026-09,1000,113100,Bank - operating,JELLIS,10/03/2026,DWHITFIELD,10/05/2026,Reconciled,0.00,USD,Agrees to bank statement.
+2026-09,1000,120000,Trade receivables,RKIM,10/03/2026,DWHITFIELD,10/05/2026,Reconciled,0.00,USD,Rolled forward; no exceptions.
+2026-09,1000,130000,Raw materials inventory,RKIM,10/03/2026,DWHITFIELD,10/05/2026,Reconciled,0.00,USD,
+2026-09,1000,131000,Work in process,RKIM,10/03/2026,DWHITFIELD,10/05/2026,Reconciled,0.00,USD,Agrees to subledger.
+2026-09,1000,140000,Prepaid expenses,APATEL,10/03/2026,DWHITFIELD,10/05/2026,Reconciled,0.00,USD,Timing items clear in first week.
+2026-09,1000,191100,GR/IR clearing - materials,SOKAFOR,10/04/2026,DWHITFIELD,10/06/2026,Reconciled,0.00,USD,"Allied 300457 root cause confirmed: invoices in BX (100 EA), info records have no BX->EA conversion. 5 items cleared MR11 5000033870 (DW approved 10/1). K. Alvarez (purchasing) to fix info records."
+2026-09,1000,198000,Intercompany receivable,PNAIR,10/04/2026,DWHITFIELD,10/06/2026,Reconciled,0.00,USD,IC-3000-0927 reposted by 3000 into P09 (3400018262). Agreed with M. Reyes 10/2: IC invoices to 1000 dated last day of closing month while 3000 period is open.
+2026-09,1000,200000,Trade payables,RKIM,10/03/2026,DWHITFIELD,10/05/2026,Reconciled,0.00,USD,
+2026-09,1000,210000,Payroll liabilities,JELLIS,10/03/2026,DWHITFIELD,10/05/2026,Reconciled,0.00,USD,Agrees to bank statement.
+2026-09,1000,211000,Accrued liabilities,RKIM,10/03/2026,DWHITFIELD,10/05/2026,Reconciled,0.00,USD,
+2026-09,1000,220000,Sales tax payable,APATEL,10/03/2026,DWHITFIELD,10/05/2026,Reconciled,0.00,USD,Timing items clear in first week.
+2026-09,2000,113100,Bank - operating,LSCHMIDT,10/03/2026,DWHITFIELD,10/05/2026,Reconciled,0.00,EUR,
+2026-09,2000,200000,Trade payables,LSCHMIDT,10/03/2026,DWHITFIELD,10/05/2026,Reconciled,0.00,EUR,Agrees to bank statement.
+2026-09,2000,298000,Intercompany payable,JBECKER,10/04/2026,DWHITFIELD,10/06/2026,Reconciled,0.00,EUR,"USD IC payable 1800004521 (640,000.00) revalued at 09/30, loss EUR 8,742.31. Treasury reviewing settlement."
+2026-09,3000,113100,Bank - operating,GTORRES,10/03/2026,DWHITFIELD,10/05/2026,Reconciled,0.00,MXN,Timing items clear in first week.
+2026-09,3000,200000,Trade payables,GTORRES,10/03/2026,DWHITFIELD,10/05/2026,Reconciled,0.00,MXN,Timing items clear in first week.

@@ -1,0 +1,213 @@
+# Readable keys for corpus files (kept outside data/corpus/ on purpose).
+may-kickoff:
+  file: uploads/Close Kickoff - May 2026 Close - 2026-06-01.vtt
+  kind: meeting
+  date: '2026-06-01'
+may-review:
+  file: uploads/Close Review - May 2026 Close - 2026-06-08.vtt
+  kind: meeting
+  date: '2026-06-08'
+jun-kickoff:
+  file: uploads/Close Kickoff - June 2026 Close - 2026-07-01.vtt
+  kind: meeting
+  date: '2026-07-01'
+jun-review:
+  file: uploads/Close Review - June 2026 Close - 2026-07-09.vtt
+  kind: meeting
+  date: '2026-07-09'
+jul-kickoff:
+  file: uploads/Close Kickoff - July 2026 Close - 2026-08-03.vtt
+  kind: meeting
+  date: '2026-08-03'
+jul-review:
+  file: uploads/Close Review - July 2026 Close - 2026-08-07.vtt
+  kind: meeting
+  date: '2026-08-07'
+aug-kickoff:
+  file: uploads/Close Kickoff - August 2026 Close - 2026-09-01.vtt
+  kind: meeting
+  date: '2026-09-01'
+aug-standup-grir-dayton:
+  file: uploads/Close Standup - Toledo GR-IR and Dayton Settlement - 2026-09-02.vtt
+  kind: meeting
+  date: '2026-09-02'
+aug-ic-sync:
+  file: uploads/IC Sync - Monterrey - 2026-09-02.vtt
+  kind: meeting
+  date: '2026-09-02'
+aug-review:
+  file: uploads/Close Review - August 2026 Close - 2026-09-08.vtt
+  kind: meeting
+  date: '2026-09-08'
+sep-kickoff:
+  file: uploads/Close Kickoff - September 2026 Close - 2026-10-01.vtt
+  kind: meeting
+  date: '2026-10-01'
+sep-allied-purchasing:
+  file: uploads/Allied Fastener GR-IR - Purchasing - 2026-10-01.vtt
+  kind: meeting
+  date: '2026-10-01'
+sep-ic-sync:
+  file: uploads/IC Sync - Monterrey - 2026-10-02.vtt
+  kind: meeting
+  date: '2026-10-02'
+sep-review:
+  file: uploads/Close Review - September 2026 Close - 2026-10-07.vtt
+  kind: meeting
+  date: '2026-10-07'
+oct-kickoff:
+  file: uploads/Close Kickoff - October 2026 Close - 2026-11-02.vtt
+  kind: meeting
+  date: '2026-11-02'
+oct-greenville-walkthrough:
+  file: uploads/Greenville First Close Walkthrough - 2026-11-03.vtt
+  kind: meeting
+  date: '2026-11-03'
+oct-review:
+  file: uploads/Close Review - October 2026 Close - 2026-11-06.vtt
+  kind: meeting
+  date: '2026-11-06'
+memo-close-calendar-2026-07:
+  file: policies/Close Calendar and Cutoffs - Controller Memo - 2026-07-15.txt
+  kind: policy
+  date: '2026-07-15'
+memo-owners-2026-07:
+  file: policies/Close Owners and FX Procedure - 2026-07-22.txt
+  kind: policy
+  date: '2026-07-22'
+memo-fin-pol-014:
+  file: policies/FIN-POL-014 Manual Accrual Threshold - 2026-09-25.txt
+  kind: policy
+  date: '2026-09-25'
+memo-ic-cutoff-2026-09:
+  file: policies/IC Cutoff Change Notice - 2026-09-30.txt
+  kind: policy
+  date: '2026-09-30'
+memo-trs-2026-07:
+  file: policies/TRS-2026-07 FX Valuation Rate Type - 2026-10-20.txt
+  kind: policy
+  date: '2026-10-20'
+je-register-2026-05:
+  file: erp/JE_Register_2026-05.csv
+  kind: erp
+  period: 2026-05
+recon-status-2026-05:
+  file: erp/Account_Recon_Status_2026-05.csv
+  kind: erp
+  period: 2026-05
+icr-matching-2026-05:
+  file: erp/ICR_Matching_2026-05.csv
+  kind: erp
+  period: 2026-05
+je-register-2026-06:
+  file: erp/JE_Register_2026-06.csv
+  kind: erp
+  period: 2026-06
+recon-status-2026-06:
+  file: erp/Account_Recon_Status_2026-06.csv
+  kind: erp
+  period: 2026-06
+icr-matching-2026-06:
+  file: erp/ICR_Matching_2026-06.csv
+  kind: erp
+  period: 2026-06
+ppv-1100-2026-06:
+  file: erp/PPV_by_Material_1100_2026-06.csv
+  kind: erp
+  period: 2026-06
+je-register-2026-07:
+  file: erp/JE_Register_2026-07.csv
+  kind: erp
+  period: 2026-07
+recon-status-2026-07:
+  file: erp/Account_Recon_Status_2026-07.csv
+  kind: erp
+  period: 2026-07
+icr-matching-2026-07:
+  file: erp/ICR_Matching_2026-07.csv
+  kind: erp
+  period: 2026-07
+je-register-2026-08:
+  file: erp/JE_Register_2026-08.csv
+  kind: erp
+  period: 2026-08
+recon-status-2026-08:
+  file: erp/Account_Recon_Status_2026-08.csv
+  kind: erp
+  period: 2026-08
+icr-matching-2026-08:
+  file: erp/ICR_Matching_2026-08.csv
+  kind: erp
+  period: 2026-08
+grir-1100-2026-08:
+  file: erp/GRIR_Open_Items_1100_2026-08.csv
+  kind: erp
+  period: 2026-08
+je-register-2026-09:
+  file: erp/JE_Register_2026-09.csv
+  kind: erp
+  period: 2026-09
+recon-status-2026-09:
+  file: erp/Account_Recon_Status_2026-09.csv
+  kind: erp
+  period: 2026-09
+icr-matching-2026-09:
+  file: erp/ICR_Matching_2026-09.csv
+  kind: erp
+  period: 2026-09
+grir-1100-2026-09:
+  file: erp/GRIR_Open_Items_1100_2026-09.csv
+  kind: erp
+  period: 2026-09
+ppv-1100-2026-09:
+  file: erp/PPV_by_Material_1100_2026-09.csv
+  kind: erp
+  period: 2026-09
+je-register-2026-10:
+  file: erp/JE_Register_2026-10.csv
+  kind: erp
+  period: 2026-10
+recon-status-2026-10:
+  file: erp/Account_Recon_Status_2026-10.csv
+  kind: erp
+  period: 2026-10
+icr-matching-2026-10:
+  file: erp/ICR_Matching_2026-10.csv
+  kind: erp
+  period: 2026-10
+grir-1100-2026-10:
+  file: erp/GRIR_Open_Items_1100_2026-10.csv
+  kind: erp
+  period: 2026-10
+grir-1300-2026-10:
+  file: erp/GRIR_Open_Items_1300_2026-10.csv
+  kind: erp
+  period: 2026-10
+ppv-1100-2026-10:
+  file: erp/PPV_by_Material_1100_2026-10.csv
+  kind: erp
+  period: 2026-10
+change-log-2026-10:
+  file: erp/Change_Log_2026-10.csv
+  kind: erp
+  period: 2026-10
+session-aug-toledo-grir:
+  file: assistant-sessions/sesn_01af9f260e125afa9fc00864.txt
+  kind: session
+  date: '2026-09-02'
+session-aug-fx-accruals:
+  file: assistant-sessions/sesn_0181f3b6763a61f59c102ec2.txt
+  kind: session
+  date: '2026-09-03'
+session-sep-allied-inforecord:
+  file: assistant-sessions/sesn_01e0e1844701e25a78f29d0f.txt
+  kind: session
+  date: '2026-10-01'
+session-sep-icr-load-failure:
+  file: assistant-sessions/sesn_01c9386aa544705e5b70a867.txt
+  kind: session
+  date: '2026-10-06'
+session-oct-fx-zcls:
+  file: assistant-sessions/sesn_010aa848b2a37460a434495b.txt
+  kind: session
+  date: '2026-11-04'

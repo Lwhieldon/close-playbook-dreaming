@@ -1,0 +1,13 @@
+ObjectClass,ObjectId,Field,OldValue,NewValue,ChangedBy,ChangedOn,ChangedAt,TimeZone,Transaction
+INFOREC,5300014420 (300457 / F-2208),Conversion order unit -> base unit,,1 BX = 100 EA,KALVAREZ,10/14/2026,10:31:02,EST,ME12
+INFOREC,5300014421 (300457 / F-2210),Conversion order unit -> base unit,,1 BX = 100 EA,KALVAREZ,10/14/2026,10:33:47,EST,ME12
+INFOREC,5300014422 (300457 / F-2215),Conversion order unit -> base unit,,1 BX = 100 EA,KALVAREZ,10/14/2026,10:35:20,EST,ME12
+ANLA,100004872-0000 (CNC horizontal mill line 2),"Depreciation key, area 01",,LINS,MCHEN,11/03/2026,09:12:55,EST,AS02
+ANLA,100004872-0000 (CNC horizontal mill line 2),"Useful life, area 01",,10 years,MCHEN,11/03/2026,09:12:55,EST,AS02
+TCURR,ZCLS EUR->USD valid from 10/31/2026,Rate,,1.0842,EPARK,11/04/2026,09:40:11,EST,OB08
+TCURR,ZCLS MXN->USD valid from 10/31/2026,Rate,,0.05322,EPARK,11/04/2026,09:40:38,EST,OB08
+BKPF,2000 / 1800004890 (parked),Posting date,10/31/2026,11/04/2026,JBECKER,11/04/2026,08:14:02,CET,FBV2
+BKPF,2000 / 1800004890 (parked),Status,Parked,Posted as 1800004902 (period 11),JBECKER,11/04/2026,08:15:19,CET,FBV0
+MARA,C-1180,Material description,Pump housing cast,Pump housing casting,RKIM,10/08/2026,13:02:44,EST,MM02
+CSKS,Cost center 4100-210,Person responsible,B. Novak,T. Lund,RKIM,10/02/2026,11:20:09,EST,KS02
+LFA1,300620 Summit Bearings,Payment terms,N30,N45,APATEL,10/19/2026,15:48:30,EST,XK02

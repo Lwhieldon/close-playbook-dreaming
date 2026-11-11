@@ -1,0 +1,3 @@
+Period,CompanyCode,Partner,DocCoCd,DocPartner,Reference,AmountCoCdUSD,AmountPartnerUSD,Status,Note
+2026-06,1000,2000,1900022290,1800004188,IC-2000-0626,229178.62,-229178.62,Matched,Mgmt fee Jun
+2026-06,1000,3000,1900022316,3400017120,IC-3000-0626,-73390.11,73390.11,Matched,Tooling services Jun

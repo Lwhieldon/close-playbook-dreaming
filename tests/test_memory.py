@@ -56,3 +56,9 @@ def test_snapshot_and_diff(tmp_path, bad_playbook):
     stats = memory.diff_stats(snap, pb)
     assert stats["added"] == ["new.md"] and stats["changed"] == ["ic-cutoff-and-calendar.md"]
     assert "+changed" in memory.diff(snap, pb)
+
+
+def test_link_back_to_index_is_not_dangling(tmp_path):
+    (tmp_path / "_index.md").write_text("[[a]] - a\n", encoding="utf-8")
+    (tmp_path / "a.md").write_text("---\nname: a\ndescription: d\n---\nBack to [[_index]].\n", encoding="utf-8")
+    assert memory.lint(tmp_path).ok

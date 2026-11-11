@@ -1,0 +1,27 @@
+TARNWELL INDUSTRIES - CORPORATE CONTROLLER
+MEMO: Month-end close calendar, cutoffs and accrual threshold
+From: Dana Whitfield, Corporate Controller
+To: Close team
+Date: July 15, 2026
+Effective: starting with the July 2026 close (period 07)
+
+Following the close policy review on July 15, 2026, these rules apply starting with the July 2026 close:
+
+1. Business days. Business day 1 (BD1) is the first working day after month end. US federal holidays are
+   not business days.
+
+2. Close target. The consolidated trial balance is due on BD5. (Previously BD6.)
+
+3. Intercompany cutoff. BD3 at 12:00 noon Eastern Time. (Previously BD4 at 12:00 noon ET.) Intercompany
+   invoices received after the cutoff roll to the next period and are carried as reconciling items.
+
+4. Manual accruals. The manual accrual threshold is $10,000 per vendor per month. (Previously $5,000.)
+   Below the threshold, do not book a manual accrual; the invoice is expensed when received.
+
+5. Approvals. Any journal entry over $250,000 requires CFO approval (Rahul Mehta) before posting. MR11
+   GR/IR write-offs and manual accruals require controller approval regardless of amount.
+
+6. Posting periods. Company codes 2000 and 3000 close their posting period in OB52 at local BD3 18:00.
+   Company code 1000 closes after consolidation on BD5.
+
+Open item: whether to move the close target to BD4. No decision; we will revisit once intercompany is faster.
