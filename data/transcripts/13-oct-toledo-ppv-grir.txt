@@ -1,0 +1,104 @@
+SESSION sesn_close_13: Toledo PPV and GR/IR after the Q4 re-cost, October (agent close-assistant; created 2026-11-02T17:15:40Z)
+
+NOTE ABOUT THIS FILE: A generated example: a month-end close assistant at a fictional manufacturer. All data is synthetic.
+
+=== primary thread sthr_close_13: close-assistant ===
+
+USER:
+Sam. Show me Toledo PPV for October and the revaluation from the Z26Q4 release.
+
+TOOL CALL sap_report:
+report: PPV by material
+plant: 1100
+period: 10/2026
+
+TOOL RESULT (sap_report):
+Purchase Price Variance by Material   Plant 1100   Period 10/2026   Account 520000
+----------------------------------------------------------------------------------------------------------------
+| Material | Description                 |    Qty | UoM | Std price | Inv. price |            PPV |
+----------------------------------------------------------------------------------------------------------------
+| R-4410   | Stainless bar 316, 40 mm    |  91200 | KG  |      9.15 |       9.12 |      2,736.00- |
+| R-3120   | Carbon steel plate 12 mm    |  39850 | KG  |      2.02 |       2.01 |        398.50- |
+| C-1180   | Pump housing casting        |   1010 | EA  |    212.00 |     212.00 |          0.00  |
+| S-0451   | Mechanical seal kit         |   1580 | EA  |     38.20 |      38.90 |      1,106.00  |
+----------------------------------------------------------------------------------------------------------------
+* Total PPV 2,028.50- USD (unfavorable = positive)
+
+TOOL CALL sap_report:
+report: FBL3N
+company_code: 1000
+gl_account: 520100
+plant: 1100
+period: 10/2026
+
+TOOL RESULT (sap_report):
+G/L Account Line Item Display  Company code 1000  G/L account 520100 Inventory revaluation - standard cost change
+| Plnt | DocumentNo | Typ | Pstng Date | Material | Qty on hand |  Amount in LC | Text
+| 1100 | 4900087731 | PR  | 10/01/2026 | R-4410   | 49,888.27 KG |    37,416.20  | Price change Z26Q4 8.40 -> 9.15
+| 1100 | 4900087732 | PR  | 10/01/2026 | R-3120   | 63,410.00 KG |     4,438.70  | Price change Z26Q4 1.95 -> 2.02
+* 2 items   Total 41,854.90 USD
+
+AGENT:
+After the Z26Q4 release, R-4410's standard is $9.15/kg (was $8.40). October PPV on R-4410 is now
+$2,736.00 favorable (91,200 kg at $9.12 vs $9.15), versus $61,869.50 unfavorable in September. Total
+Toledo PPV for October is $2,028.50 favorable.
+
+The release posted a one-time revaluation of stock on hand in period 10 to 520100 (inventory
+revaluation - standard cost change): $37,416.20 for R-4410 (49,888.27 kg x $0.75, document 4900087731)
+and $4,438.70 for R-3120, $41,854.90 in total. That's a P&L charge this month, not PPV.
+
+USER:
+And Allied Fastener? Purchasing says they fixed the info records.
+
+TOOL CALL sap_lookup:
+object: Purchasing info record
+vendor: 300457
+material: F-2208
+purch_org: 1000
+
+TOOL RESULT (sap_lookup):
+Info record 5300014420  Vendor 300457 Allied Fastener Supply  Material F-2208 Hex bolt M10x40 zinc
+Order unit EA   Base unit EA   Conversion: 1 BX = 100 EA   Changed 10/14/2026 by K. Alvarez (purchasing)
+
+TOOL CALL sap_report:
+report: MR11 worklist
+plant: 1100
+key_date: 10/31/2026
+
+TOOL RESULT (sap_report):
+GR/IR Account Maintenance worklist   Plant 1100   Key date 10/31/2026
+--------------------------------------------------------------------------------------------------------------------------------------------
+| Purch.Doc.  | Item  | Vendor | Vendor name                | Material | GR qty | UoM | IR qty | UoM |     GR value |     IR value | Age (d) |
+--------------------------------------------------------------------------------------------------------------------------------------------
+| 4500048881  | 00030 | 300519 | Great Lakes Freight        | R-7106   |    224 | EA  |    224 | EA  |    7,298.03  |    7,298.03  |      24 |
+| 4500021588  | 00030 | 300233 | Lakeshore Packaging        | R-5205   |    177 | EA  |    177 | EA  |    8,900.45  |    8,900.45  |      19 |
+| 4500076364  | 00010 | 300402 | Buckeye Electric Motors    | R-9349   |    407 | EA  |    407 | EA  |    5,183.09  |    5,183.09  |      10 |
+| 4500043183  | 00010 | 300112 | Midwest Steel Service      | R-1869   |    207 | EA  |    207 | EA  |    3,700.48  |    3,700.06  |      41 |
+| 4500070694  | 00010 | 300301 | Ohio Valley Industrial Gas | R-4796   |    363 | EA  |    363 | EA  |    1,438.36  |    1,466.40  |      38 |
+| 4500095978  | 00020 | 300198 | Keystone Castings          | R-2134   |    861 | EA  |    861 | EA  |    6,728.71  |    6,728.71  |       4 |
+| 4500042514  | 00030 | 300620 | Summit Bearings            | R-9657   |    727 | EA  |    727 | EA  |    4,471.83  |    4,496.66  |      20 |
+| 4500092215  | 00010 | 300457 | Allied Fastener Supply     | F-2208   |   3000 | EA  |     30 | EA  |    1,380.00  |    1,380.00  |      33 |
+| 4500069620  | 00010 | 300112 | Midwest Steel Service      | R-4775   |    323 | EA  |    323 | EA  |    4,297.49  |    4,337.09  |      17 |
+| 4500068220  | 00030 | 300402 | Buckeye Electric Motors    | R-4919   |    814 | EA  |    814 | EA  |    7,980.51  |    7,980.51  |      35 |
+| 4500092402  | 00010 | 300457 | Allied Fastener Supply     | F-2215   |   4000 | EA  |     40 | EA  |    1,860.00  |    1,860.00  |      28 |
+| 4500092290  | 00020 | 300457 | Allied Fastener Supply     | F-2210   |   2000 | EA  |     20 | EA  |      770.00  |      770.00  |      31 |
+| 4500092701  | 00010 | 300457 | Allied Fastener Supply     | F-2208   |   2000 | EA  |     20 | EA  |      920.00  |      920.00  |      20 |
+| 4500056339  | 00010 | 300233 | Lakeshore Packaging        | R-5748   |    894 | EA  |    894 | EA  |    4,579.47  |    4,579.47  |      27 |
+| 4500042999  | 00030 | 300519 | Great Lakes Freight        | R-3260   |     66 | EA  |     66 | EA  |    6,530.60  |    6,530.60  |      24 |
+| 4500094036  | 00020 | 300388 | Precision Seal Co.         | R-1917   |     95 | EA  |     95 | EA  |    4,777.12  |    4,777.12  |      13 |
+| 4500093060  | 00020 | 300233 | Lakeshore Packaging        | R-6179   |    783 | EA  |    783 | EA  |      488.30  |      488.30  |      26 |
+| 4500080223  | 00010 | 300388 | Precision Seal Co.         | R-7152   |    874 | EA  |    874 | EA  |    2,067.67  |    2,067.67  |      13 |
+| 4500092633  | 00010 | 300457 | Allied Fastener Supply     | F-2210   |   3000 | EA  |     30 | EA  |    1,155.00  |    1,155.00  |      22 |
+| 4500028299  | 00030 | 300402 | Buckeye Electric Motors    | R-3289   |    179 | EA  |    179 | EA  |    4,599.84  |    4,599.84  |       6 |
+| 4500042481  | 00030 | 300233 | Lakeshore Packaging        | R-2370   |    524 | EA  |    524 | EA  |    8,745.78  |    8,777.73  |       9 |
+| 4500045939  | 00030 | 300519 | Great Lakes Freight        | R-1455   |    872 | EA  |    872 | EA  |    4,714.92  |    4,730.90  |      45 |
+| 4500092518  | 00010 | 300457 | Allied Fastener Supply     | F-2208   |   1000 | EA  |     10 | EA  |      460.00  |      460.00  |      25 |
+| 4500099981  | 00030 | 300620 | Summit Bearings            | R-1168   |    353 | EA  |    353 | EA  |    8,071.15  |    8,071.15  |      11 |
+--------------------------------------------------------------------------------------------------------------------------------------------
+* 24 PO items with GR/IR differences
+
+AGENT:
+Purchasing (K. Alvarez) added 1 BX = 100 EA to the Allied info records on 10/14/2026. Allied invoices
+posted after that clear normally. Six Allied items are still open, all from POs invoiced before 10/14
+(ages 20 to 33 days, $6,545.00): they have the old quantity error and won't clear on their own. They need
+one more MR11 with Dana's approval. After that this issue should be closed.

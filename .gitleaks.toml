@@ -1,0 +1,10 @@
+# Gitleaks configuration: the default rules, plus an allowlist for the one fake credential that is
+# planted on purpose in the synthetic data (and in the lint test fixture) to prove dreaming keeps
+# secrets out of memory. It is not a real password for any system.
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Planted demo credential in synthetic transcripts and test fixtures"
+regexes = ['''Tw!nPeaks-Demo-2026''']
+paths = ['''data/transcripts/11-sep-icr-load-failure\.txt''', '''tests/fixtures/playbook_bad/.*''', '''data/ground_truth\.yaml''']

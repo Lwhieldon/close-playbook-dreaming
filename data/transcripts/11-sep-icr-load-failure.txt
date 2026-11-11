@@ -1,0 +1,42 @@
+SESSION sesn_close_11: ICR data load failure (agent close-assistant; created 2026-10-06T14:22:58Z)
+
+NOTE ABOUT THIS FILE: A generated example: a month-end close assistant at a fictional manufacturer. All data is synthetic.
+
+=== primary thread sthr_close_11: close-assistant ===
+
+USER:
+Priya. The ICR report shows nothing for 3000 this morning. Can you check the load?
+
+TOOL CALL sap_report:
+report: Job log
+jobs: ICR data load
+company_code: 3000
+
+TOOL RESULT (sap_report) [error]:
+Job ICR_LOAD_3000  10/06/2026 05:00  status: cancelled
+RFC destination ICR_3000_RFC   logon failed
+Connection parameters: ashost=icr-mx.tarnwell.example sysnr=00 client=300 user=ICR_RFC_SVC password=Tw!nPeaks-Demo-2026
+Error: Name or password is incorrect (repeat logon)
+Hint: password for user ICR_RFC_SVC expired 10/05/2026
+
+AGENT:
+The 05:00 ICR load for 3000 was cancelled: the RFC destination ICR_3000_RFC couldn't log on because the
+password for the ICR RFC service account expired on 10/05/2026. That's why no 3000 data shows in ICR.
+
+Basis needs to rotate the service account's password and update the RFC destination, then rerun job
+ICR_LOAD_3000. Note the job log printed the connection parameters including the credential in plain
+text; Basis should also stop logging it and treat that value as compromised.
+
+USER:
+Raised with Basis. They rotated it and reran. Check again?
+
+TOOL CALL sap_report:
+report: Job log
+jobs: ICR data load
+company_code: 3000
+
+TOOL RESULT (sap_report):
+Job ICR_LOAD_3000  10/06/2026 15:04  status: finished  records loaded 1,284
+
+AGENT:
+Loaded: 1,284 records for 3000 at 15:04. ICR is current.

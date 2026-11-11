@@ -1,0 +1,56 @@
+SESSION sesn_close_09: Stuttgart FX revaluation, September (agent close-assistant; created 2026-10-05T13:12:09Z)
+
+NOTE ABOUT THIS FILE: A generated example: a month-end close assistant at a fictional manufacturer. All data is synthetic.
+
+=== primary thread sthr_close_09: close-assistant ===
+
+USER:
+Jonas in Stuttgart. FX valuation for 2000 shows a bigger loss than I expected. Why?
+
+TOOL CALL sap_run:
+transaction: FAGL_FCV
+company_code: 2000
+key_date: 09/30/2026
+valuation_area: US_GAAP
+rate_type: M
+test_run: X
+
+TOOL RESULT (sap_run):
+Foreign Currency Valuation
+Company code 2000 Tarnwell Pumpen GmbH   Valuation key date 09/30/2026   Valuation area US_GAAP
+Exchange rate type M   Postings to 541000 Unrealized FX gain/loss, reversal on first day of next period
+----------------------------------------------------------------------------------------------------------------
+| DocumentNo | G/L    |   Amount in FC | FC  |  Old rate |  New rate |   Valuation diff LC |
+----------------------------------------------------------------------------------------------------------------
+| 1800004421 | 198000 |    185,000.00  | USD |   0.92166 |   0.91324 |           1,557.70- |
+| 1800004521 | 298000 |    640,000.00- | USD |   0.89964 |   0.91330 |           8,742.31- |
+| 5100088412 | 211000 |     22,800.00- | USD |   0.92166 |   0.91324 |             191.98  |
+| 1800004498 | 198000 |     31,050.00  | GBP |   1.16210 |   1.15880 |             102.47- |
+----------------------------------------------------------------------------------------------------------------
+* Total valuation difference 10,210.50- EUR
+
+AGENT:
+Net valuation difference is EUR -10,210.50. Almost all of it is one item: document 1800004521, the USD
+640,000.00 intercompany payable to 1000 on account 298000. The rate moved from 0.89964 (the rate it was
+booked at) to 0.91330 EUR per USD, a loss of EUR 8,742.31. The rest is small: the USD receivable
+1800004421 (EUR -1,557.70), an accrual (+191.98) and a GBP receivable (-102.47).
+
+So it's not a broad move, it's the large IC payable booked at an old rate. If treasury settles that
+payable, the exposure goes away.
+
+USER:
+Makes sense. Post it.
+
+TOOL CALL sap_run:
+transaction: FAGL_FCV
+company_code: 2000
+key_date: 09/30/2026
+valuation_area: US_GAAP
+rate_type: M
+test_run: 
+
+TOOL RESULT (sap_run):
+Valuation posted: document 1000077251, reversal 1000077252 dated 10/01/2026
+
+AGENT:
+Posted 1000077251, reversing 10/01/2026.

@@ -1,0 +1,28 @@
+SESSION sesn_close_06: September close kickoff (agent close-assistant; created 2026-10-01T12:47:30Z)
+
+NOTE ABOUT THIS FILE: A generated example: a month-end close assistant at a fictional manufacturer. All data is synthetic.
+
+=== primary thread sthr_close_06: close-assistant ===
+
+USER:
+September close starts today. A few changes before we start:
+1. The new accrual policy memo FIN-POL-014 is effective with this close: the manual accrual threshold
+   goes from $10,000 to $25,000 per vendor per month.
+2. IC cutoff stays at BD3 noon ET for September. Starting with the October close it moves to BD2 at
+   5:00 pm ET. We agreed that in the close retro on 9/29.
+3. Greenville (plant 1300) goes live today under company code 1000. It's not in scope for September,
+   but it is for October onward.
+Please give me the calendar.
+
+AGENT:
+September close calendar (BD1 Thu 10/1):
+
+- BD1 Thu 10/1: kickoff, GR/IR review, production order WIP (KKAO), variance (KKS2), then settlement (CO88).
+- BD2 Fri 10/2: GR/IR and settlement complete.
+- BD3 Mon 10/5: IC cutoff 12:00 noon ET (last month on this rule). FX revaluation with rate type M.
+  OB52 closes 09 for 2000 and 3000 at local 18:00.
+- BD4 Tue 10/6: accruals at the new $25,000 threshold (FIN-POL-014), IC eliminations.
+- BD5 Wed 10/7: consolidated trial balance; 1000 closes period 09.
+
+Noted for October onward: IC cutoff BD2 5:00 pm ET, and plant 1300 Greenville added to company code 1000
+checks (GR/IR, depreciation, inventory). For September, plants in scope remain 1100 and 1200.

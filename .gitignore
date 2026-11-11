@@ -1,3 +1,24 @@
+# Secrets: never commit any env file except the example
+.env
+.env.*
+*.env
+!.env.example
+
+# Python
+.venv/
+__pycache__/
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+build/
+dist/
+
+# Run output (memory snapshots, eval results, records)
+output/
+records/
+.ipynb_checkpoints/
+
+# ---- GitHub Python template ----
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]

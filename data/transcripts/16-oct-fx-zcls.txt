@@ -1,0 +1,76 @@
+SESSION sesn_close_16: FX revaluation with ZCLS, October (agent close-assistant; created 2026-11-04T13:30:21Z)
+
+NOTE ABOUT THIS FILE: A generated example: a month-end close assistant at a fictional manufacturer. All data is synthetic.
+
+=== primary thread sthr_close_16: close-assistant ===
+
+USER:
+Dana. First FX valuation under ZCLS. Run the test for 1000 at 10/31.
+
+TOOL CALL sap_run:
+transaction: FAGL_FCV
+company_code: 1000
+key_date: 10/31/2026
+valuation_area: US_GAAP
+rate_type: ZCLS
+test_run: X
+
+TOOL RESULT (sap_run) [error]:
+Foreign Currency Valuation  ** TEST RUN **
+Error FAGL_FCV 012: No exchange rate found for rate type ZCLS, EUR -> USD, on 10/31/2026
+Error FAGL_FCV 012: No exchange rate found for rate type ZCLS, MXN -> USD, on 10/31/2026
+
+TOOL CALL sap_lookup:
+object: Exchange rates (TCURR)
+rate_type: ZCLS
+from_date: 10/28/2026
+
+TOOL RESULT (sap_lookup):
+Rate type ZCLS
+| From | To  | Valid from | Rate
+| EUR  | USD | 10/29/2026 | 1.0861
+| EUR  | USD | 10/30/2026 | 1.0842
+| MXN  | USD | 10/29/2026 | 0.05318
+| MXN  | USD | 10/30/2026 | 0.05322
+
+AGENT:
+The ZCLS rates for 10/31/2026 are missing. 10/31 was a Saturday and treasury's last load is dated
+10/30. Under M this never mattered because M rates are maintained for month end, but TRS-2026-07 says
+ZCLS is the closing spot for the last calendar day of the month, and FAGL_FCV looks up the key date
+exactly.
+
+Treasury (Elena Park) should load the Friday 10/30 closing rates with a valid-from date of 10/31/2026 (or
+confirm the rule for weekend month ends). Then rerun.
+
+USER:
+Elena loaded them dated 10/31. Rerun.
+
+TOOL CALL sap_run:
+transaction: FAGL_FCV
+company_code: 1000
+key_date: 10/31/2026
+valuation_area: US_GAAP
+rate_type: ZCLS
+test_run: X
+
+TOOL RESULT (sap_run):
+Foreign Currency Valuation  ** TEST RUN **
+Company code 1000 Tarnwell Industries Inc.   Valuation key date 10/31/2026   Valuation area US_GAAP
+Exchange rate type ZCLS   Postings to 541000 Unrealized FX gain/loss, reversal on first day of next period
+----------------------------------------------------------------------------------------------------------------
+| DocumentNo | G/L    |   Amount in FC | FC  |  Old rate |  New rate |   Valuation diff LC |
+----------------------------------------------------------------------------------------------------------------
+| 1900023990 | 198000 |  1,310,000.00  | EUR |    1.0885 |    1.0842 |           5,633.00- |
+| 5105606420 | 211000 |     92,100.00- | EUR |    1.0885 |    1.0842 |             396.03  |
+| 1900024188 | 298000 |  1,351,940.00- | MXN |   0.05311 |   0.05322 |             148.71- |
+----------------------------------------------------------------------------------------------------------------
+* Total valuation difference 5,385.68- USD
+
+AGENT:
+Test run is clean with ZCLS: net unrealized loss of $5,385.68, mainly the EUR 1,310,000 IC receivable
+from 2000 (1.0885 to 1.0842: -$5,633.00). Before each ZCLS run, check that ZCLS rates exist in TCURR for
+the exact key date, especially when month end falls on a weekend. The next weekend month end is January
+31, 2027 (a Sunday).
+
+USER:
+Post it.
