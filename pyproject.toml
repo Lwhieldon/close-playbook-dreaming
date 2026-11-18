@@ -13,10 +13,14 @@ dependencies = [
   "anthropic>=2.0.0,<3",
   "python-dotenv>=1.0",
   "pyyaml>=6.0",
+  # read the corpus formats: PDF memos, Word documents and Excel exports
+  "pypdf>=5.0",
+  "openpyxl>=3.1",
+  "python-docx>=1.1",
 ]
 
 [project.optional-dependencies]
-dev = ["pytest>=8", "ruff>=0.6"]
+dev = ["pytest>=8", "ruff>=0.6", "fpdf2>=2.8"]  # fpdf2 writes the PDF memos in scripts/build_corpus.py
 notebooks = ["jupyter", "ipykernel", "matplotlib"]
 
 [project.scripts]
@@ -41,6 +45,9 @@ select = ["E", "F", "I", "B", "UP"]
 "scripts/corpus_sessions.py" = ["E501"]
 "scripts/sap_extracts.py" = ["E501"]
 "scripts/corpus_erp.py" = ["E501"]
+"scripts/corpus_early.py" = ["E501"]
+"scripts/corpus_org.py" = ["E501"]
+"scripts/formats.py" = ["E501"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

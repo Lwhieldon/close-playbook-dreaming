@@ -58,7 +58,9 @@ def xlsx_report(
                         ws.cell(ws.max_row, j).number_format = "0.00"
         if totals and data:
             sums = {c: sum(_num(r.get(c, 0)) or 0 for r in data) for c in totals}
-            ws.append(["Total" if j == 0 else (round(sums[c], 2) if c in totals else "") for j, c in enumerate(columns)])
+            ws.append(
+                ["Total" if j == 0 else (round(sums[c], 2) if c in totals else "") for j, c in enumerate(columns)]
+            )
             for j, c in enumerate(columns, 1):
                 if c in totals:
                     ws.cell(ws.max_row, j).number_format = "0.00"
@@ -70,6 +72,7 @@ def xlsx_report(
     wb.properties.created = datetime(2026, 1, 1)
     wb.properties.modified = datetime(2026, 1, 1)
     wb.save(path)
+    _freeze(path)
 
 
 def _num(v):
@@ -78,12 +81,21 @@ def _num(v):
     return float(D(str(v).replace(",", "")))
 
 
-def spool_txt(title: str, header_lines: list[str], columns: list[tuple[str, int]], rows: list[dict], footer: str) -> str:
+def spool_txt(
+    title: str, header_lines: list[str], columns: list[tuple[str, int]], rows: list[dict], footer: str
+) -> str:
     """A fixed-width list as printed to a spool file, with the page header repeated on every page."""
     rule = "-" * (sum(w for _, w in columns) + len(columns) + 1)
     head = "|" + "|".join(f"{n[:w]:<{w}}" for n, w in columns) + "|"
-    body = ["|" + "|".join(f"{str(r.get(n, ''))[:w]:>{w}}" if _numeric(r.get(n)) else f"{str(r.get(n, ''))[:w]:<{w}}"
-                           for n, w in columns) + "|" for r in rows]
+    body = [
+        "|"
+        + "|".join(
+            f"{str(r.get(n, ''))[:w]:>{w}}" if _numeric(r.get(n)) else f"{str(r.get(n, ''))[:w]:<{w}}"
+            for n, w in columns
+        )
+        + "|"
+        for r in rows
+    ]
     per_page = PAGE_LINES - len(header_lines) - 5
     pages = [body[i : i + per_page] for i in range(0, len(body), per_page)] or [[]]
     out = []
@@ -153,12 +165,26 @@ def docx_memo(path: Path, text: str) -> None:
     d.core_properties.modified = datetime(2026, 1, 1)
     path.parent.mkdir(parents=True, exist_ok=True)
     d.save(str(path))
+    _freeze(path)
+
+
+def _freeze(path: Path) -> None:
+    """Pin the save timestamps inside an xlsx or docx so a rebuild writes byte-identical files."""
+    import re
+    import zipfile
+
+    with zipfile.ZipFile(path) as z:
+        parts = [(i.filename, z.read(i.filename)) for i in z.infolist()]
+    stamp = b"2026-11-01T00:00:00Z"
+    with zipfile.ZipFile(path, "w", zipfile.ZIP_DEFLATED) as z:
+        for name, data in parts:
+            if name == "docProps/core.xml":
+                data = re.sub(rb"(<dcterms:(?:created|modified)[^>]*>)[^<]*", rb"\g<1>" + stamp, data)
+            z.writestr(zipfile.ZipInfo(name, date_time=(2026, 11, 1, 0, 0, 0)), data, zipfile.ZIP_DEFLATED)
 
 
 def _latin1(text: str) -> str:
-    return text.replace("–", "-").replace("—", "-").replace("’", "'").encode("latin-1", "replace").decode(
-        "latin-1"
-    )
+    return text.replace("–", "-").replace("—", "-").replace("’", "'").encode("latin-1", "replace").decode("latin-1")
 
 
 def bai2(

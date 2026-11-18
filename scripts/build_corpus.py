@@ -276,7 +276,7 @@ def main() -> None:
             formats.pdf_memo(CORPUS / rel, text, signed_by=signer)
         manifest[key] = {"file": rel, "kind": "policy", "date": date}
 
-    for period in erp.PERIODS:
+    for period in org.PERIODS:
         for key, (rel, content) in erp_files(period).items():
             if callable(content):
                 (CORPUS / rel).parent.mkdir(parents=True, exist_ok=True)

@@ -1,0 +1,2 @@
+ObjectClass,ObjectId,Field,OldValue,NewValue,ChangedBy,ChangedOn,ChangedAt,TimeZone,Transaction
+INTERFACE,"MES_CONF_1400 (MES confirmations to PP, plant 1400)",Field mapping SCRAP_QTY,(unmapped),AFRU-XMNGA (confirmed scrap),ITBASIS02,01/22/2026,18:05:41,CST,SM59/ZMES

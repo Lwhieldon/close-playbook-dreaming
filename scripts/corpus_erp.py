@@ -19,7 +19,7 @@ import io
 import random
 from decimal import Decimal as D
 
-from corpus_org import PERIODS, PLANTS, plant_active  # noqa: E402
+from corpus_org import PLANTS, plant_active  # noqa: E402
 
 LAST_DAY = {
     "2025-11": "11/30/2025",
@@ -867,7 +867,9 @@ def recon_rows(period: str) -> list[dict]:
                     "Status": "Reconciled",
                     "UnreconciledAmount": "0.00",
                     "Currency": {"1000": "USD", "2000": "EUR", "3000": "MXN"}[cc],
-                    "Comment": rng.choice(["Agrees to inventory valuation report.", "Rolled forward; no exceptions.", ""]),
+                    "Comment": rng.choice(
+                        ["Agrees to inventory valuation report.", "Rolled forward; no exceptions.", ""]
+                    ),
                 }
             )
     rows.sort(key=lambda r: (r["CompanyCode"], r["Account"]))
@@ -1427,7 +1429,17 @@ for _period, _pairs in _early.ICR.items():
     _fee, _tool = _pairs
     _mon = {"11": "Nov", "12": "Dec", "01": "Jan", "02": "Feb", "03": "Mar", "04": "Apr"}[_period[5:]]
     ICR[_period] = [
-        ("1000", "2000", _fee[0], _fee[1], _fee[2], _fee[3], f"-{_fee[3]}", "Matched", f"Mgmt fee {_mon} (EUR 212,400.00)"),
+        (
+            "1000",
+            "2000",
+            _fee[0],
+            _fee[1],
+            _fee[2],
+            _fee[3],
+            f"-{_fee[3]}",
+            "Matched",
+            f"Mgmt fee {_mon} (EUR 212,400.00)",
+        ),
         ("1000", "3000", _tool[0], _tool[1], _tool[2], f"-{_tool[3]}", _tool[3], "Matched", f"Tooling services {_mon}"),
     ]
 for _period, _rows in _early.CHANGES.items():

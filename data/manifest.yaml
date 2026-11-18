@@ -1,4 +1,56 @@
 # Readable keys for corpus files (kept outside data/corpus/ on purpose).
+nov25-kickoff:
+  file: uploads/Close Kickoff - November 2025 Close - 2025-12-01.vtt
+  kind: meeting
+  date: '2025-12-01'
+nov25-review:
+  file: uploads/Close Review - November 2025 Close - 2025-12-08.vtt
+  kind: meeting
+  date: '2025-12-08'
+dec25-kickoff:
+  file: uploads/Year-End Close Kickoff - December 2025 Close - 2026-01-02.vtt
+  kind: meeting
+  date: '2026-01-02'
+dec25-count:
+  file: uploads/Year-End Physical Inventory Results - 2026-01-06.vtt
+  kind: meeting
+  date: '2026-01-06'
+dec25-review:
+  file: uploads/Year-End Close Review - December 2025 Close - 2026-01-09.vtt
+  kind: meeting
+  date: '2026-01-09'
+jan26-kickoff:
+  file: uploads/Close Kickoff - January 2026 Close - 2026-02-02.vtt
+  kind: meeting
+  date: '2026-02-02'
+jan26-review:
+  file: uploads/Close Review - January 2026 Close - 2026-02-09.vtt
+  kind: meeting
+  date: '2026-02-09'
+feb26-kickoff:
+  file: uploads/Close Kickoff - February 2026 Close - 2026-03-02.vtt
+  kind: meeting
+  date: '2026-03-02'
+feb26-review:
+  file: uploads/Close Review - February 2026 Close - 2026-03-09.vtt
+  kind: meeting
+  date: '2026-03-09'
+mar26-kickoff:
+  file: uploads/Close Kickoff - March 2026 Close - 2026-04-01.vtt
+  kind: meeting
+  date: '2026-04-01'
+mar26-review:
+  file: uploads/Close Review - March 2026 Close - 2026-04-08.vtt
+  kind: meeting
+  date: '2026-04-08'
+apr26-kickoff:
+  file: uploads/Close Kickoff - April 2026 Close - 2026-05-01.vtt
+  kind: meeting
+  date: '2026-05-01'
+apr26-review:
+  file: uploads/Close Review - April 2026 Close - 2026-05-08.vtt
+  kind: meeting
+  date: '2026-05-08'
 may-kickoff:
   file: uploads/Close Kickoff - May 2026 Close - 2026-06-01.vtt
   kind: meeting
@@ -67,48 +119,240 @@ oct-review:
   file: uploads/Close Review - October 2026 Close - 2026-11-06.vtt
   kind: meeting
   date: '2026-11-06'
+memo-year-end-2025:
+  file: policies/Year-End Close Instructions 2025 - Controller Memo - 2025-12-15.pdf
+  kind: policy
+  date: '2025-12-15'
+memo-close-calendar-2026-01:
+  file: policies/2026 Close Calendar - Controller Memo - 2026-01-12.pdf
+  kind: policy
+  date: '2026-01-12'
+memo-erie-2026-03:
+  file: policies/Erie Plant Production Wind-Down - Close Procedures - 2026-03-16.pdf
+  kind: policy
+  date: '2026-03-16'
 memo-close-calendar-2026-07:
-  file: policies/Close Calendar and Cutoffs - Controller Memo - 2026-07-15.txt
+  file: policies/Close Calendar and Cutoffs - Controller Memo - 2026-07-15.pdf
   kind: policy
   date: '2026-07-15'
 memo-owners-2026-07:
-  file: policies/Close Owners and FX Procedure - 2026-07-22.txt
+  file: policies/Close Owners and FX Procedure - 2026-07-22.docx
   kind: policy
   date: '2026-07-22'
 memo-fin-pol-014:
-  file: policies/FIN-POL-014 Manual Accrual Threshold - 2026-09-25.txt
+  file: policies/FIN-POL-014 Manual Accrual Threshold - 2026-09-25.pdf
   kind: policy
   date: '2026-09-25'
 memo-ic-cutoff-2026-09:
-  file: policies/IC Cutoff Change Notice - 2026-09-30.txt
+  file: policies/IC Cutoff Change Notice - 2026-09-30.pdf
   kind: policy
   date: '2026-09-30'
 memo-trs-2026-07:
-  file: policies/TRS-2026-07 FX Valuation Rate Type - 2026-10-20.txt
+  file: policies/TRS-2026-07 FX Valuation Rate Type - 2026-10-20.pdf
   kind: policy
   date: '2026-10-20'
+je-register-2025-11:
+  file: erp/JE_Register_2025-11.xlsx
+  kind: erp
+  period: 2025-11
+recon-status-2025-11:
+  file: erp/Account_Recon_Status_2025-11.xlsx
+  kind: erp
+  period: 2025-11
+icr-matching-2025-11:
+  file: erp/ICR_Matching_2025-11.csv
+  kind: erp
+  period: 2025-11
+plant-inventory-2025-11:
+  file: erp/Inventory_WIP_by_Plant_2025-11.xlsx
+  kind: erp
+  period: 2025-11
+prod-variance-2025-11:
+  file: erp/Production_Order_Variance_by_Plant_2025-11.xlsx
+  kind: erp
+  period: 2025-11
+bank-2025-11:
+  file: erp/BAI2_FirstLakes_1000_Operating_2025-11.dat
+  kind: erp
+  period: 2025-11
+je-register-2025-12:
+  file: erp/JE_Register_2025-12.xlsx
+  kind: erp
+  period: 2025-12
+recon-status-2025-12:
+  file: erp/Account_Recon_Status_2025-12.xlsx
+  kind: erp
+  period: 2025-12
+icr-matching-2025-12:
+  file: erp/ICR_Matching_2025-12.csv
+  kind: erp
+  period: 2025-12
+plant-inventory-2025-12:
+  file: erp/Inventory_WIP_by_Plant_2025-12.xlsx
+  kind: erp
+  period: 2025-12
+prod-variance-2025-12:
+  file: erp/Production_Order_Variance_by_Plant_2025-12.xlsx
+  kind: erp
+  period: 2025-12
+bank-2025-12:
+  file: erp/BAI2_FirstLakes_1000_Operating_2025-12.dat
+  kind: erp
+  period: 2025-12
+je-register-2026-01:
+  file: erp/JE_Register_2026-01.xlsx
+  kind: erp
+  period: 2026-01
+recon-status-2026-01:
+  file: erp/Account_Recon_Status_2026-01.xlsx
+  kind: erp
+  period: 2026-01
+icr-matching-2026-01:
+  file: erp/ICR_Matching_2026-01.csv
+  kind: erp
+  period: 2026-01
+plant-inventory-2026-01:
+  file: erp/Inventory_WIP_by_Plant_2026-01.xlsx
+  kind: erp
+  period: 2026-01
+prod-variance-2026-01:
+  file: erp/Production_Order_Variance_by_Plant_2026-01.xlsx
+  kind: erp
+  period: 2026-01
+bank-2026-01:
+  file: erp/BAI2_FirstLakes_1000_Operating_2026-01.dat
+  kind: erp
+  period: 2026-01
+change-log-2026-01:
+  file: erp/Change_Log_2026-01.csv
+  kind: erp
+  period: 2026-01
+je-register-2026-02:
+  file: erp/JE_Register_2026-02.xlsx
+  kind: erp
+  period: 2026-02
+recon-status-2026-02:
+  file: erp/Account_Recon_Status_2026-02.xlsx
+  kind: erp
+  period: 2026-02
+icr-matching-2026-02:
+  file: erp/ICR_Matching_2026-02.csv
+  kind: erp
+  period: 2026-02
+plant-inventory-2026-02:
+  file: erp/Inventory_WIP_by_Plant_2026-02.xlsx
+  kind: erp
+  period: 2026-02
+prod-variance-2026-02:
+  file: erp/Production_Order_Variance_by_Plant_2026-02.xlsx
+  kind: erp
+  period: 2026-02
+bank-2026-02:
+  file: erp/BAI2_FirstLakes_1000_Operating_2026-02.dat
+  kind: erp
+  period: 2026-02
+je-register-2026-03:
+  file: erp/JE_Register_2026-03.xlsx
+  kind: erp
+  period: 2026-03
+recon-status-2026-03:
+  file: erp/Account_Recon_Status_2026-03.xlsx
+  kind: erp
+  period: 2026-03
+icr-matching-2026-03:
+  file: erp/ICR_Matching_2026-03.csv
+  kind: erp
+  period: 2026-03
+plant-inventory-2026-03:
+  file: erp/Inventory_WIP_by_Plant_2026-03.xlsx
+  kind: erp
+  period: 2026-03
+prod-variance-2026-03:
+  file: erp/Production_Order_Variance_by_Plant_2026-03.xlsx
+  kind: erp
+  period: 2026-03
+bank-2026-03:
+  file: erp/BAI2_FirstLakes_1000_Operating_2026-03.dat
+  kind: erp
+  period: 2026-03
+change-log-2026-03:
+  file: erp/Change_Log_2026-03.csv
+  kind: erp
+  period: 2026-03
+je-register-2026-04:
+  file: erp/JE_Register_2026-04.xlsx
+  kind: erp
+  period: 2026-04
+recon-status-2026-04:
+  file: erp/Account_Recon_Status_2026-04.xlsx
+  kind: erp
+  period: 2026-04
+icr-matching-2026-04:
+  file: erp/ICR_Matching_2026-04.csv
+  kind: erp
+  period: 2026-04
+plant-inventory-2026-04:
+  file: erp/Inventory_WIP_by_Plant_2026-04.xlsx
+  kind: erp
+  period: 2026-04
+prod-variance-2026-04:
+  file: erp/Production_Order_Variance_by_Plant_2026-04.xlsx
+  kind: erp
+  period: 2026-04
+bank-2026-04:
+  file: erp/BAI2_FirstLakes_1000_Operating_2026-04.dat
+  kind: erp
+  period: 2026-04
+change-log-2026-04:
+  file: erp/Change_Log_2026-04.csv
+  kind: erp
+  period: 2026-04
 je-register-2026-05:
-  file: erp/JE_Register_2026-05.csv
+  file: erp/JE_Register_2026-05.xlsx
   kind: erp
   period: 2026-05
 recon-status-2026-05:
-  file: erp/Account_Recon_Status_2026-05.csv
+  file: erp/Account_Recon_Status_2026-05.xlsx
   kind: erp
   period: 2026-05
 icr-matching-2026-05:
   file: erp/ICR_Matching_2026-05.csv
   kind: erp
   period: 2026-05
+plant-inventory-2026-05:
+  file: erp/Inventory_WIP_by_Plant_2026-05.xlsx
+  kind: erp
+  period: 2026-05
+prod-variance-2026-05:
+  file: erp/Production_Order_Variance_by_Plant_2026-05.xlsx
+  kind: erp
+  period: 2026-05
+bank-2026-05:
+  file: erp/BAI2_FirstLakes_1000_Operating_2026-05.dat
+  kind: erp
+  period: 2026-05
 je-register-2026-06:
-  file: erp/JE_Register_2026-06.csv
+  file: erp/JE_Register_2026-06.xlsx
   kind: erp
   period: 2026-06
 recon-status-2026-06:
-  file: erp/Account_Recon_Status_2026-06.csv
+  file: erp/Account_Recon_Status_2026-06.xlsx
   kind: erp
   period: 2026-06
 icr-matching-2026-06:
   file: erp/ICR_Matching_2026-06.csv
+  kind: erp
+  period: 2026-06
+plant-inventory-2026-06:
+  file: erp/Inventory_WIP_by_Plant_2026-06.xlsx
+  kind: erp
+  period: 2026-06
+prod-variance-2026-06:
+  file: erp/Production_Order_Variance_by_Plant_2026-06.xlsx
+  kind: erp
+  period: 2026-06
+bank-2026-06:
+  file: erp/BAI2_FirstLakes_1000_Operating_2026-06.dat
   kind: erp
   period: 2026-06
 ppv-1100-2026-06:
@@ -116,47 +360,83 @@ ppv-1100-2026-06:
   kind: erp
   period: 2026-06
 je-register-2026-07:
-  file: erp/JE_Register_2026-07.csv
+  file: erp/JE_Register_2026-07.xlsx
   kind: erp
   period: 2026-07
 recon-status-2026-07:
-  file: erp/Account_Recon_Status_2026-07.csv
+  file: erp/Account_Recon_Status_2026-07.xlsx
   kind: erp
   period: 2026-07
 icr-matching-2026-07:
   file: erp/ICR_Matching_2026-07.csv
   kind: erp
   period: 2026-07
+plant-inventory-2026-07:
+  file: erp/Inventory_WIP_by_Plant_2026-07.xlsx
+  kind: erp
+  period: 2026-07
+prod-variance-2026-07:
+  file: erp/Production_Order_Variance_by_Plant_2026-07.xlsx
+  kind: erp
+  period: 2026-07
+bank-2026-07:
+  file: erp/BAI2_FirstLakes_1000_Operating_2026-07.dat
+  kind: erp
+  period: 2026-07
 je-register-2026-08:
-  file: erp/JE_Register_2026-08.csv
+  file: erp/JE_Register_2026-08.xlsx
   kind: erp
   period: 2026-08
 recon-status-2026-08:
-  file: erp/Account_Recon_Status_2026-08.csv
+  file: erp/Account_Recon_Status_2026-08.xlsx
   kind: erp
   period: 2026-08
 icr-matching-2026-08:
   file: erp/ICR_Matching_2026-08.csv
   kind: erp
   period: 2026-08
+plant-inventory-2026-08:
+  file: erp/Inventory_WIP_by_Plant_2026-08.xlsx
+  kind: erp
+  period: 2026-08
+prod-variance-2026-08:
+  file: erp/Production_Order_Variance_by_Plant_2026-08.xlsx
+  kind: erp
+  period: 2026-08
+bank-2026-08:
+  file: erp/BAI2_FirstLakes_1000_Operating_2026-08.dat
+  kind: erp
+  period: 2026-08
 grir-1100-2026-08:
-  file: erp/GRIR_Open_Items_1100_2026-08.csv
+  file: erp/GRIR_Open_Items_1100_2026-08.txt
   kind: erp
   period: 2026-08
 je-register-2026-09:
-  file: erp/JE_Register_2026-09.csv
+  file: erp/JE_Register_2026-09.xlsx
   kind: erp
   period: 2026-09
 recon-status-2026-09:
-  file: erp/Account_Recon_Status_2026-09.csv
+  file: erp/Account_Recon_Status_2026-09.xlsx
   kind: erp
   period: 2026-09
 icr-matching-2026-09:
   file: erp/ICR_Matching_2026-09.csv
   kind: erp
   period: 2026-09
+plant-inventory-2026-09:
+  file: erp/Inventory_WIP_by_Plant_2026-09.xlsx
+  kind: erp
+  period: 2026-09
+prod-variance-2026-09:
+  file: erp/Production_Order_Variance_by_Plant_2026-09.xlsx
+  kind: erp
+  period: 2026-09
+bank-2026-09:
+  file: erp/BAI2_FirstLakes_1000_Operating_2026-09.dat
+  kind: erp
+  period: 2026-09
 grir-1100-2026-09:
-  file: erp/GRIR_Open_Items_1100_2026-09.csv
+  file: erp/GRIR_Open_Items_1100_2026-09.txt
   kind: erp
   period: 2026-09
 ppv-1100-2026-09:
@@ -164,23 +444,35 @@ ppv-1100-2026-09:
   kind: erp
   period: 2026-09
 je-register-2026-10:
-  file: erp/JE_Register_2026-10.csv
+  file: erp/JE_Register_2026-10.xlsx
   kind: erp
   period: 2026-10
 recon-status-2026-10:
-  file: erp/Account_Recon_Status_2026-10.csv
+  file: erp/Account_Recon_Status_2026-10.xlsx
   kind: erp
   period: 2026-10
 icr-matching-2026-10:
   file: erp/ICR_Matching_2026-10.csv
   kind: erp
   period: 2026-10
+plant-inventory-2026-10:
+  file: erp/Inventory_WIP_by_Plant_2026-10.xlsx
+  kind: erp
+  period: 2026-10
+prod-variance-2026-10:
+  file: erp/Production_Order_Variance_by_Plant_2026-10.xlsx
+  kind: erp
+  period: 2026-10
+bank-2026-10:
+  file: erp/BAI2_FirstLakes_1000_Operating_2026-10.dat
+  kind: erp
+  period: 2026-10
 grir-1100-2026-10:
-  file: erp/GRIR_Open_Items_1100_2026-10.csv
+  file: erp/GRIR_Open_Items_1100_2026-10.txt
   kind: erp
   period: 2026-10
 grir-1300-2026-10:
-  file: erp/GRIR_Open_Items_1300_2026-10.csv
+  file: erp/GRIR_Open_Items_1300_2026-10.txt
   kind: erp
   period: 2026-10
 ppv-1100-2026-10:
@@ -191,6 +483,18 @@ change-log-2026-10:
   file: erp/Change_Log_2026-10.csv
   kind: erp
   period: 2026-10
+joblog-dayton-2026-08:
+  file: erp/SM37_ZPP_PERIODEND_1200_2026-09-01.txt
+  kind: erp
+  date: '2026-09-01'
+joblog-dayton-rerun-2026-08:
+  file: erp/SM37_ZPP_SETTLE_1200_RERUN_2026-09-02.txt
+  kind: erp
+  date: '2026-09-02'
+joblog-kc-teco-2026-04:
+  file: erp/SM37_ZPP_TECO_1700_2026-05-01.txt
+  kind: erp
+  date: '2026-05-01'
 session-aug-toledo-grir:
   file: assistant-sessions/sesn_01af9f260e125afa9fc00864.txt
   kind: session

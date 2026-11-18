@@ -116,7 +116,7 @@ def inventory_rows(period: str) -> list[dict]:
         prior_rng = random.Random(f"inv-{plant}-{PERIODS[idx - 1]}") if idx else None
         base = _base(plant, cc)
 
-        def total(r):
+        def total(r, base=base):
             return (base * D(str(r.uniform(0.94, 1.06)))).quantize(D("0.01"))
 
         tot = total(rng)
@@ -142,7 +142,8 @@ def inventory_rows(period: str) -> list[dict]:
             "FinishedGoods": fg,
             "TotalInventory": tot,
             "PriorMonthTotal": prior if not (plant == "1300" and period == "2026-10") else "",
-            "ChangePct": f"{(tot - prior) / prior * 100:.1f}" if prior and not (plant == "1300" and period == "2026-10")
+            "ChangePct": f"{(tot - prior) / prior * 100:.1f}"
+            if prior and not (plant == "1300" and period == "2026-10")
             else "",
             "OpenProdOrders": orders,
             "PlantControllerSignOff": ctl,
@@ -233,16 +234,39 @@ def bank_transactions(period: str) -> tuple[D, list[tuple[str, D, str, str]]]:
         roll = rng.random()
         ref = f"{rng.randint(100000000, 999999999)}"
         if roll < 0.40:
-            tx.append(("165", D(rng.randint(500_000, 45_000_000)) / 100, ref, f"ACH CREDIT {rng.choice(BANK_CUSTOMERS)} REMIT"))
+            tx.append(
+                (
+                    "165",
+                    D(rng.randint(500_000, 45_000_000)) / 100,
+                    ref,
+                    f"ACH CREDIT {rng.choice(BANK_CUSTOMERS)} REMIT",
+                )
+            )
         elif roll < 0.48:
-            tx.append(("195", D(rng.randint(2_000_000, 90_000_000)) / 100, ref, f"WIRE IN {rng.choice(BANK_CUSTOMERS)}"))
+            tx.append(
+                ("195", D(rng.randint(2_000_000, 90_000_000)) / 100, ref, f"WIRE IN {rng.choice(BANK_CUSTOMERS)}")
+            )
         elif roll < 0.85:
-            tx.append(("455", D(rng.randint(300_000, 30_000_000)) / 100, ref, f"ACH DEBIT {rng.choice(BANK_VENDORS)} PAYMENT RUN F110"))
+            tx.append(
+                (
+                    "455",
+                    D(rng.randint(300_000, 30_000_000)) / 100,
+                    ref,
+                    f"ACH DEBIT {rng.choice(BANK_VENDORS)} PAYMENT RUN F110",
+                )
+            )
         elif roll < 0.95:
             tx.append(("475", D(rng.randint(50_000, 4_000_000)) / 100, ref, f"CHECK PAID {rng.randint(40000, 49999)}"))
         else:
             tx.append(("495", D(rng.randint(5_000_000, 60_000_000)) / 100, ref, "WIRE OUT PAYROLL FUNDING ADP"))
-    tx.append(("698", D(rng.randint(150_000, 210_000)) / 100, f"{rng.randint(100000000, 999999999)}", "ANALYSIS SERVICE CHARGE"))
+    tx.append(
+        (
+            "698",
+            D(rng.randint(150_000, 210_000)) / 100,
+            f"{rng.randint(100000000, 999999999)}",
+            "ANALYSIS SERVICE CHARGE",
+        )
+    )
     if period == "2026-03":
         # A duplicate vendor payment, visible only in the bank file and recovered in April.
         tx.append(("455", D("38940.00"), "558201447", "ACH DEBIT KEYSTONE CASTINGS PAYMENT RUN F110 INV 77120"))

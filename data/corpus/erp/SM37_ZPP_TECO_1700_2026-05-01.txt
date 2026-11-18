@@ -1,0 +1,7 @@
+Job log overview: job ZPP_TECO_1700 (immediate, user DHOLM)
+Date       Time     Message text                                                         Msg class  No.
+05/01/2026 07:02:10 Job started                                                          00         516
+05/01/2026 07:02:10 Step 001 started (program COHV mass processing, function TECO, plant 1700) 00  550
+05/01/2026 07:09:55 174 orders selected with status REL, delivered quantity reached           CO   120
+05/01/2026 07:16:31 174 orders set to TECO                                                   CO   121
+05/01/2026 07:16:31 Job finished                                                              00   517

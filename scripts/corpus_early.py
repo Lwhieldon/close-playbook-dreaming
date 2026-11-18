@@ -193,7 +193,10 @@ EARLY_MEETINGS = [
         "2026-03-02",
         [DANA, LUIS, SAM, ANA, JONAS, JORDAN, DEREK, PAUL],
         [
-            (DANA, "February close. IC cutoff BD4 noon, Thursday the 5th. TB Monday the 9th. Accruals at five thousand."),
+            (
+                DANA,
+                "February close. IC cutoff BD4 noon, Thursday the 5th. TB Monday the 9th. Accruals at five thousand.",
+            ),
             (
                 DANA,
                 "Erie: we announced last week that Erie stops production at the end of March. Paul, you'll move "
@@ -225,7 +228,10 @@ EARLY_MEETINGS = [
         "2026-04-01",
         [DANA, LUIS, SAM, ANA, JONAS, JORDAN, DEREK, PAUL],
         [
-            (DANA, "March close, quarter end. IC cutoff BD4 noon, that's Monday the 6th. TB on BD6, Wednesday the 8th."),
+            (
+                DANA,
+                "March close, quarter end. IC cutoff BD4 noon, that's Monday the 6th. TB on BD6, Wednesday the 8th.",
+            ),
             (PAUL, "Erie stopped production yesterday. All stock is in Toledo. Only fixed assets left."),
             (
                 SAM,
@@ -471,7 +477,10 @@ def key_jes(je) -> dict[str, list]:
                 "JELLIS",
                 "Posted",
                 "Keystone Castings duplicate payment inv 77120 - receivable from vendor",
-                [("128000", 38940, "Duplicate payment 03/18 F110, refund requested"), ("200000", -38940, "Keystone 300198")],
+                [
+                    ("128000", 38940, "Duplicate payment 03/18 F110, refund requested"),
+                    ("200000", -38940, "Keystone 300198"),
+                ],
             ),
         ],
         "2026-04": [
@@ -504,7 +513,10 @@ def period13_jes(je) -> list:
             "JELLIS",
             "Posted",
             "AJE 1 Hartwell & Crane: unrecorded liability Keystone Castings inv 77031 (Dec receipts), period 13",
-            [("500000", 64300, "Keystone Castings 300198 inv 77031 rec'd 01/14/2026"), ("211000", -64300, "Accrued AP")],
+            [
+                ("500000", 64300, "Keystone Castings 300198 inv 77031 rec'd 01/14/2026"),
+                ("211000", -64300, "Accrued AP"),
+            ],
             posted_by="DWHITFIELD",
             posted_on="01/23/2026",
         ),

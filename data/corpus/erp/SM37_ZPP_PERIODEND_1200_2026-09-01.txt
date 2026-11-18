@@ -1,0 +1,11 @@
+Job log overview: job ZPP_PERIODEND_1200 (scheduled, user BATCH_PP)
+Date       Time     Message text                                                         Msg class  No.
+09/01/2026 06:10:02 Job started                                                          00         516
+09/01/2026 06:10:02 Step 001 started (program RKO7CO88, variant ZSETTLE_1200, user BATCH_PP)  00   550
+09/01/2026 06:10:44 Settlement period 008/2026, plant 1200: 212 orders selected               KD   701
+09/01/2026 06:11:58 212 orders processed, 0 settled: no WIP or variance determined for period  KD   702
+09/01/2026 06:11:58 Step 002 started (program SAPKKA12, variant ZWIP_1200, user BATCH_PP)     00   550
+09/01/2026 06:14:31 WIP calculated for 212 orders                                             KA   410
+09/01/2026 06:14:31 Step 003 started (program SAPKKS2, variant ZVAR_1200, user BATCH_PP)      00   550
+09/01/2026 06:19:07 Variances calculated for 198 orders                                       KV   220
+09/01/2026 06:19:07 Job finished                                                              00   517

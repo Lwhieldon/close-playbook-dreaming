@@ -1,0 +1,3 @@
+Period,CompanyCode,Partner,DocCoCd,DocPartner,Reference,AmountCoCdUSD,AmountPartnerUSD,Status,Note
+2025-11,1000,2000,1900019881,1800003720,IC-2000-1125,222870.12,-222870.12,Matched,"Mgmt fee Nov (EUR 212,400.00)"
+2025-11,1000,3000,1900019904,3400014211,IC-3000-1125,-68114.40,68114.40,Matched,Tooling services Nov

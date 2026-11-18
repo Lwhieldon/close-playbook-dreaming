@@ -1,0 +1,7 @@
+Job log overview: job ZPP_SETTLE_1200_RERUN (immediate, user SOKAFOR)
+Date       Time     Message text                                                         Msg class  No.
+09/02/2026 08:41:15 Job started                                                          00         516
+09/02/2026 08:41:15 Step 001 started (program RKO7CO88, variant ZSETTLE_1200, user SOKAFOR)   00   550
+09/02/2026 08:43:02 Settlement period 008/2026, plant 1200: 212 orders selected               KD   701
+09/02/2026 08:44:40 212 orders processed, 212 settled (WIP and variances from 09/01 run)      KD   702
+09/02/2026 08:44:40 Job finished                                                              00   517

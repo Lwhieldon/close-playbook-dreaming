@@ -1,0 +1,3 @@
+ObjectClass,ObjectId,Field,OldValue,NewValue,ChangedBy,ChangedOn,ChangedAt,TimeZone,Transaction
+T001W,1900 Erie,Plant status,Active,Production stopped 03/31/2026 (no new orders),RKIM,03/31/2026,17:40:22,EST,OX10
+LFA1,300198 Keystone Castings,Payment block,,"R (duplicate payment, refund pending)",APATEL,04/02/2026,09:30:15,EST,XK02

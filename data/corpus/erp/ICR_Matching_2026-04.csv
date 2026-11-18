@@ -1,0 +1,3 @@
+Period,CompanyCode,Partner,DocCoCd,DocPartner,Reference,AmountCoCdUSD,AmountPartnerUSD,Status,Note
+2026-04,1000,2000,1900021650,1800004066,IC-2000-0426,227799.52,-227799.52,Matched,"Mgmt fee Apr (EUR 212,400.00)"
+2026-04,1000,3000,1900021677,3400016433,IC-3000-0426,-70022.91,70022.91,Matched,Tooling services Apr

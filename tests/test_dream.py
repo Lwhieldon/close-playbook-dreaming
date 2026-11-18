@@ -45,7 +45,7 @@ def scripted_dreamer(kwargs):
 
 @pytest.fixture
 def may():
-    return tx.select(tx.load(config.CORPUS), through="2026-05")
+    return tx.select(tx.load(config.CORPUS), through="2026-05", after="2026-04")
 
 
 def test_dream_builds_a_clean_playbook(tmp_path, may):
@@ -60,7 +60,7 @@ def test_dream_builds_a_clean_playbook(tmp_path, may):
     assert result.snapshot.exists()
     # every request asks for automatic prompt caching; the source travels inline with its kind and period
     assert all(c.get("cache_control") == {"type": "ephemeral"} for c in client.calls)
-    first = next(c for c in client.calls if "JE_Register_2026-05.csv" in str(c["messages"][0]["content"]))
+    first = next(c for c in client.calls if "JE_Register_2026-05.xlsx" in str(c["messages"][0]["content"]))
     assert 'kind="erp" close_period="2026-05"' in first["messages"][0]["content"]
     assert "5105599102" in first["messages"][0]["content"]
     assert result.usage.by_label["analyzer"].requests == 2 * len(may)
