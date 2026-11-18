@@ -1,4 +1,4 @@
-# close-playbook-dreaming
+# Financial Agentic Dreaming for the month-end close 😴💭
 
 **Dreaming for the month-end close: turn a close team's meetings, ERP activity and policies into a dated,
 linked close playbook that gets smarter after every close.**
