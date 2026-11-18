@@ -53,6 +53,19 @@ def test_turn_limit(tmp_path):
     assert out.hit_turn_limit and len(client.calls) == 3
 
 
+def test_final_answer_turn_after_the_limit(tmp_path):
+    def script(kw):
+        if kw.get("tool_choice") == {"type": "none"}:
+            last = kw["messages"][-1]["content"]
+            assert last[0]["type"] == "tool_result" and last[-1] == {"type": "text", "text": "answer now"}
+            return response([text_block("best answer")])
+        return response([tool_block("glob", {"pattern": "*"}, f"t{len(kw['messages'])}")], stop="tool_use")
+
+    client = FakeClient(script)
+    out = run(client, tmp_path, max_turns=2, final_answer_prompt="answer now")
+    assert out.hit_turn_limit and out.text == "best answer" and len(client.calls) == 3
+
+
 def test_max_tokens_without_tool_call_continues(tmp_path):
     def script(kw):
         if len(kw["messages"]) == 1:

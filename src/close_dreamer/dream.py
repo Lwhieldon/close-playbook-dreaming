@@ -97,8 +97,13 @@ def dream(
     extra_injections: list[str] | None = None,
     on_event: Callable[[str], None] | None = print,
     announce_estimate: bool = True,
+    source_bytes: int | None = None,
 ) -> DreamResult:
-    """Dream over `transcripts` into the playbook folder, updating it in place (a snapshot is kept)."""
+    """Dream over `transcripts` into the playbook folder, updating it in place (a snapshot is kept).
+
+    `source_bytes` is the size of the whole record the playbook now covers (every close so far, not just
+    this dream's files). The organizer gets a size target from it, and lint warns when the playbook grows
+    past it: a playbook that is as big as its sources has abstracted nothing."""
     models = models or Models()
     if not transcripts:
         raise ValueError("No transcripts selected: nothing to dream over.")
@@ -171,18 +176,39 @@ def dream(
         client,
         model=models.organizer,
         system=organizer_system,
-        user_content=f"The analyzers have finished. Organize the playbook at {MEM_DIR}.",
+        user_content=organizer_brief(playbook, source_bytes or sum(t.size for t in transcripts)),
         tools=tools,
         tracker=tracker,
         label="organizer",
-        max_turns=60,
+        max_turns=80,
         on_event=on_event,
     )
     result.organizer = parse_json_line(out.text)
 
-    result.lint = memory.lint(playbook, extra_secrets=extra_secrets, extra_injections=extra_injections)
+    result.lint = memory.lint(
+        playbook,
+        extra_secrets=extra_secrets,
+        extra_injections=extra_injections,
+        source_bytes=source_bytes or sum(t.size for t in transcripts),
+    )
     result.changes = memory.diff_stats(snap, playbook)
     return result
+
+
+def organizer_brief(playbook: Path, source_bytes: int) -> str:
+    size = sum(p.stat().st_size for p in Path(playbook).rglob("*.md"))
+    target = int(memory.MAX_SOURCE_RATIO * 0.6 * source_bytes)  # aim well inside the lint limit
+    return (
+        f"The analyzers have finished. Organize the playbook at {MEM_DIR}.\n\n"
+        f"Size: the playbook is now {size:,} bytes. The close record it covers is {source_bytes:,} bytes. "
+        f"Target: under {target:,} bytes. "
+        + (
+            "It is over the target: fold per-source and per-month pages into topic pages and drop routine lines "
+            "as your instructions describe, then retire the emptied pages."
+            if size > target
+            else "It is within the target; keep it that way."
+        )
+    )
 
 
 def parse_json_line(text: str) -> dict:

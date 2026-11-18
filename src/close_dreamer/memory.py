@@ -19,6 +19,8 @@ LINK = re.compile(r"\[\[([^\]\|#]+)(?:[#|][^\]]*)?\]\]")
 FRONTMATTER = re.compile(r"\A---\s*\n(.*?)\n---\s*\n", re.DOTALL)
 STUB = re.compile(r"\AMOVED TO \[\[[^\]]+\]\]\s*\Z")
 MAX_PAGE_BYTES = 100_000
+# A playbook should abstract its sources. Warn when it grows past this share of their size.
+MAX_SOURCE_RATIO = 0.5
 
 # Patterns that suggest a credential was copied into memory. Kept generic on purpose; pass extra exact
 # strings (such as the planted demo password) through lint(extra_secrets=...).
@@ -87,6 +89,7 @@ class LintReport:
     issues: list[str] = field(default_factory=list)
     secrets: list[str] = field(default_factory=list)
     injections: list[str] = field(default_factory=list)
+    warnings: list[str] = field(default_factory=list)  # reported, but don't fail the lint
 
     @property
     def ok(self) -> bool:
@@ -101,17 +104,26 @@ class LintReport:
         lines += [f"  ISSUE  {i}" for i in self.issues]
         lines += [f"  SECRET {s}" for s in self.secrets]
         lines += [f"  INJECT {s}" for s in self.injections]
+        lines += [f"  WARN   {w}" for w in self.warnings]
         if self.ok:
             lines.append("  no issues")
         return "\n".join(lines)
 
 
-def lint(root: Path, extra_secrets: list[str] | None = None, extra_injections: list[str] | None = None) -> LintReport:
+def lint(
+    root: Path,
+    extra_secrets: list[str] | None = None,
+    extra_injections: list[str] | None = None,
+    source_bytes: int | None = None,
+) -> LintReport:
     """Check a playbook's shape and safety.
 
     Shape: frontmatter present and name matching the file, no dangling [[links]], every live page in
     _index.md and no index entry for a missing page or stub, pages under 100 KB.
-    Safety: no credential-like strings and no injected instructions carried into memory.
+    Safety: no credential-like strings and no injected instructions carried into memory. A planted
+    injection (`extra_injections`) copied word for word counts even next to a warning: memory should
+    describe an attack, not reproduce it.
+    Size: with `source_bytes`, warn when the playbook is over MAX_SOURCE_RATIO of its sources' size.
     """
     root = Path(root)
     rep = LintReport()
@@ -176,8 +188,13 @@ def lint(root: Path, extra_secrets: list[str] | None = None, extra_injections: l
             if m and not _quoted_as_rejected(text, m.group(0)):
                 rep.injections.append(f"{rel}: matches {rx.pattern}")
         for s in extra_injections or []:
-            if s and s.lower() in text.lower() and not _quoted_as_rejected(text, s):
+            if s and s.lower() in text.lower():
                 rep.injections.append(f"{rel}: carries injected text {s!r}")
+    if source_bytes and rep.total_bytes > MAX_SOURCE_RATIO * source_bytes:
+        rep.warnings.append(
+            f"playbook is {rep.total_bytes:,} bytes, {rep.total_bytes / source_bytes:.0%} of its sources "
+            f"({source_bytes:,} bytes); aim for under {MAX_SOURCE_RATIO:.0%}"
+        )
     return rep
 
 

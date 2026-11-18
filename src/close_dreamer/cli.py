@@ -125,8 +125,10 @@ def _dream(args) -> int:
         extra_injections=injections,
         on_event=print if args.verbose else _quiet,
         announce_estimate=False,
+        source_bytes=_record_bytes(max((t.period for t in chosen if t.period), default=None)),
     )
     print(result.report())
+    print(f"Saved: {_save_dream_run(result, chosen, args)}")
     periods = [t.period for t in chosen if t.period]
     if periods:
         state = _state() | {str(Path(args.playbook).resolve()): max(periods)}
@@ -137,6 +139,52 @@ def _dream(args) -> int:
     return 0
 
 
+def _record_bytes(through: str | None) -> int | None:
+    """Size of the close record a playbook covers: every corpus file up to and including `through`."""
+    if not through:
+        return None
+    return sum(t.size for t in tx.select(tx.load(config.CORPUS), through=through, after=None)) or None
+
+
+def _save_dream_run(result, chosen, args) -> Path:
+    """Keep each dream's usage, cost and lint result, so they survive a lost terminal."""
+    from datetime import UTC, datetime
+
+    config.RUNS.mkdir(parents=True, exist_ok=True)
+    stamp = datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ")
+    path = config.RUNS / f"dream-{args.through or 'all'}-{stamp}.json"
+    lint = result.lint
+    path.write_text(
+        json.dumps(
+            {
+                "through": args.through,
+                "sources": [t.name for t in chosen],
+                "source_chars": sum(t.size for t in chosen),
+                "failures": result.failures,
+                "organizer": result.organizer,
+                "changes": {k: len(v) for k, v in (result.changes or {}).items()},
+                "lint": {
+                    "pages": lint.pages,
+                    "stubs": lint.stubs,
+                    "index_entries": lint.index_entries,
+                    "bytes": lint.total_bytes,
+                    "issues": lint.issues,
+                    "secrets": lint.secrets,
+                    "injections": lint.injections,
+                    "warnings": lint.warnings,
+                }
+                if lint
+                else None,
+                "usage": result.usage.as_dict() if result.usage else None,
+                "models": vars(config.Models()),
+            },
+            indent=2,
+        ),
+        encoding="utf-8",
+    )
+    return path
+
+
 def _quiet(msg: str) -> None:
     if not msg.startswith("["):  # hide per-tool-call lines unless --verbose
         print(msg)
@@ -144,7 +192,10 @@ def _quiet(msg: str) -> None:
 
 def cmd_lint(args) -> int:
     secrets, injections = _probes()
-    rep = memory.lint(Path(args.playbook), extra_secrets=secrets, extra_injections=injections)
+    seen = _state().get(str(Path(args.playbook).resolve()))
+    rep = memory.lint(
+        Path(args.playbook), extra_secrets=secrets, extra_injections=injections, source_bytes=_record_bytes(seen)
+    )
     print(rep.summary())
     return 0 if rep.ok else 2
 
@@ -197,24 +248,40 @@ def cmd_evaluate(args) -> int:
     if bad:
         print(f"Unknown condition(s): {', '.join(sorted(bad))}")
         return 1
-    n = len(questions) * len(conditions)
-    if not _confirm(f"Answer and grade {n} question/condition pairs, budget ${args.budget:.2f}?", args.yes):
+    try:
+        turn_limits = [int(t) for t in str(args.max_turns).split(",")]
+    except ValueError:
+        print(f"--max-turns takes a number or a comma-separated list, e.g. 2,4,8 (got {args.max_turns!r})")
+        return 1
+    n = len(questions) * len(conditions) * len(turn_limits)
+    each = f"; budget ${args.budget:.2f} per turn limit" if len(turn_limits) > 1 else f", budget ${args.budget:.2f}"
+    if not _confirm(f"Answer and grade {n} question/condition pairs{each}?", args.yes):
         return 1
     client = config.make_client()
-    graded, tracker = ev.run(
-        client,
-        questions,
-        conditions=conditions,
-        sources_dir=config.CORPUS,
-        playbook_dir=Path(args.playbook),
-        budget_usd=args.budget,
-        concurrency=args.concurrency,
-        max_turns=args.max_turns,
-    )
-    print(ev.summarize(graded, tracker))
-    print(tracker.table())
-    tag = f"turns{args.max_turns}" if args.max_turns != 12 else ""
-    print(f"Saved: {ev.save(graded, tracker, config.RUNS, tag=tag)}")
+    results = {}
+    for turns in turn_limits:
+        if len(turn_limits) > 1:
+            print(f"\n== {turns} tool turns ==")
+        graded, tracker = ev.run(
+            client,
+            questions,
+            conditions=conditions,
+            sources_dir=config.CORPUS,
+            playbook_dir=Path(args.playbook),
+            budget_usd=args.budget,
+            concurrency=args.concurrency,
+            max_turns=turns,
+        )
+        results[turns] = graded
+        print(ev.summarize(graded, tracker))
+        print(tracker.table())
+        tag = f"turns{turns}" if turns != 12 else ""
+        print(f"Saved: {ev.save(graded, tracker, config.RUNS, tag=tag)}")
+    if len(turn_limits) > 1:
+        table = ev.sweep_table(results)
+        print("\nScore by turn limit:\n" + table)
+        out = ev.save_sweep(table, config.RUNS)
+        print(f"Saved: {out}")
     return 0
 
 
@@ -271,7 +338,11 @@ def build_parser() -> argparse.ArgumentParser:
     s = sub.add_parser("evaluate", help="Compare no memory, raw sources, the playbook, and both (paid)")
     s.add_argument("--conditions", default="none,sources,playbook,both")
     s.add_argument("--questions", help="Comma-separated question ids (default: all)")
-    s.add_argument("--max-turns", type=int, default=12, help="Tool-using turns per answer (try 3 for a quick run)")
+    s.add_argument(
+        "--max-turns",
+        default="12",
+        help="Tool-using turns per answer, or a list for a sweep, e.g. 2,4,8 (each limit is a separate run)",
+    )
     s.add_argument("--budget", type=float, default=3.0)
     s.add_argument("--concurrency", type=int, default=4)
     s.add_argument("--yes", action="store_true")

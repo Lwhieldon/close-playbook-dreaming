@@ -40,9 +40,11 @@ def run_agent(
     max_turns: int = 30,
     effort: str | None = None,
     on_event: Callable[[str], None] | None = None,
+    final_answer_prompt: str | None = None,
 ) -> AgentResult:
     """Run one agent until it stops calling tools (or hits max_turns). Raises BudgetExceeded via the
-    tracker when the run's budget is spent, and AgentRefused on a refusal stop."""
+    tracker when the run's budget is spent, and AgentRefused on a refusal stop. With
+    `final_answer_prompt`, an agent that runs out of tool turns gets one last tool-free turn to answer."""
     messages: list[dict] = [{"role": "user", "content": user_content}]
     extra = {"output_config": {"effort": effort}} if effort else {}
     log = on_event or (lambda _msg: None)
@@ -91,6 +93,31 @@ def run_agent(
         # All results from one assistant turn go back together in a single user message.
         messages.append({"role": "user", "content": results})
 
+    if final_answer_prompt:
+        # Out of tool turns: one more request with tools switched off, so the agent answers from what it
+        # has already read instead of returning nothing. The tool definitions stay (the history holds tool
+        # calls); tool_choice "none" forbids new ones. A text block may follow tool results in a user turn.
+        note = {"type": "text", "text": final_answer_prompt}
+        last = messages[-1]
+        if last["role"] == "user" and isinstance(last["content"], list):
+            last["content"] = [*last["content"], note]
+        else:  # the loop ended on an assistant turn (for example pause_turn)
+            messages.append({"role": "user", "content": [note]})
+        response = client.messages.create(
+            model=model,
+            max_tokens=MAX_TOKENS,
+            system=system,
+            tools=tools.definitions(),
+            tool_choice={"type": "none"},
+            messages=messages,
+            cache_control={"type": "ephemeral"},
+            **extra,
+        )
+        tracker.add(label, model, response.usage)
+        texts = [b.text for b in response.content if getattr(b, "type", "") == "text"]
+        if texts:
+            text = "\n".join(texts).strip()
+        stop = response.stop_reason or ""
     return AgentResult(text=text, turns=max_turns, stop_reason=stop, hit_turn_limit=True)
 
 
