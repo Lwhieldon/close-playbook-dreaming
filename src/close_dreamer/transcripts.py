@@ -3,10 +3,12 @@
 A dream reads four kinds of source, by top-level folder:
 
 - uploads/             meeting transcripts a team member uploaded (Teams .vtt): discussion and decisions
-- erp/                 ERP exports (.csv): the system of record for what was posted, changed and when
-- policies/            controller and treasury memos (.txt): authoritative rules
+- erp/                 ERP exports (.xlsx, .csv, spool .txt, bank .dat, job logs): the system of record for
+                       what was posted, changed and when
+- policies/            controller and treasury memos (.pdf, .docx): authoritative rules
 - assistant-sessions/  close-assistant session exports (.txt)
 
+Binary formats are read through `extract.text_of`, so `text` and `size` are always the readable text.
 Each file belongs to the close it informs. ERP exports name their posting period (JE_Register_2026-08).
 Other files carry a date (in the name, or the SESSION line): a date in the first ten days of a month belongs
 to the previous month's close (close work happens right after month end); a later date belongs to that
@@ -19,10 +21,12 @@ import re
 from dataclasses import dataclass
 from pathlib import Path
 
+from .extract import SUPPORTED, text_of
+
 SESSION_LINE = re.compile(r"^SESSION (\S+): (.*) \(agent .*; created (\d{4}-\d{2}-\d{2})T", re.MULTILINE)
 DATE_IN_NAME = re.compile(r"(\d{4})-(\d{2})-(\d{2})")
-PERIOD_IN_NAME = re.compile(r"_(\d{4})-(\d{2})\.csv$")
-SUFFIXES = {".txt", ".md", ".json", ".jsonl", ".log", ".vtt", ".csv"}
+PERIOD_IN_NAME = re.compile(r"_(\d{4})-(\d{2})\.\w+$")
+SUFFIXES = SUPPORTED
 KINDS = {"uploads": "meeting", "erp": "erp", "policies": "policy", "assistant-sessions": "session"}
 CLOSE_WORK_DAYS = 10  # dates on or before this day of the month belong to the previous month's close
 
@@ -40,11 +44,12 @@ class Transcript:
 
     @property
     def text(self) -> str:
-        return self.path.read_text(encoding="utf-8")
+        return text_of(self.path)
 
     @property
     def size(self) -> int:
-        return self.path.stat().st_size
+        """Characters of readable text (for a PDF or spreadsheet, not its bytes on disk)."""
+        return len(self.text)
 
 
 Source = Transcript
@@ -68,7 +73,7 @@ def load(folder: Path) -> list[Transcript]:
             continue
         rel = p.relative_to(folder).as_posix()
         kind = KINDS.get(rel.split("/", 1)[0], "other") if "/" in rel else "other"
-        head = p.read_text(encoding="utf-8", errors="replace")[:2000]
+        head = text_of(p)[:2000] if p.suffix.lower() in {".txt", ".md", ".log"} else ""
         sid, title, period = None, p.stem, None
         m = SESSION_LINE.search(head)
         if m:

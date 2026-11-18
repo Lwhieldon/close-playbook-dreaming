@@ -21,11 +21,18 @@ facts:
     evidence:
       - [memo-ic-cutoff-2026-09, "the intercompany cutoff is BD2 at 5:00 pm Eastern Time"]
 
+  - id: accrual-2500
+    statement: Manual accrual threshold $2,500 per vendor per month (2025, including the December 2025 year-end close).
+    valid_from: 2025-01-01
+    superseded_by: accrual-5k
+    evidence:
+      - [memo-year-end-2025, "Threshold $2,500 per vendor per month for the December close."]
   - id: accrual-5k
-    statement: Manual accrual threshold $5,000 per vendor per month (through the June 2026 close).
-    valid_from: 2026-01-01
+    statement: Manual accrual threshold $5,000 per vendor per month (January through June 2026 closes; 2026 close calendar memo).
+    valid_from: 2026-01-12
     superseded_by: accrual-10k
     evidence:
+      - [memo-close-calendar-2026-01, "The manual accrual threshold is $5,000 per vendor per month. (Previously $2,500.)"]
       - [may-kickoff, "Manual accruals at five thousand per vendor"]
   - id: accrual-10k
     statement: Manual accrual threshold $10,000 per vendor per month (July and August 2026 closes).
@@ -87,17 +94,46 @@ facts:
     evidence:
       - [memo-owners-2026-07, "Intercompany reconciliation: Priya Nair (from Luis Ortega"]
 
-  - id: plants-1000-three
-    statement: Plants in scope for 1000 are 1100, 1200 and 1300 (Greenville from the October 2026 close).
+  - id: plants-1000-with-erie
+    statement: Plants in scope for 1000 are 1100, 1200, 1400-1800 and Erie 1900 (through the March 2026 close).
+    valid_from: 2025-01-01
+    superseded_by: plants-1000-seven
+    evidence:
+      - [memo-erie-2026-03, "Erie (plant 1900) stops production on March 31, 2026."]
+  - id: plants-1000-seven
+    statement: Plants in scope for 1000 are 1100, 1200 and 1400-1800; Erie out from the April 2026 close.
+    valid_from: 2026-04-01
+    superseded_by: plants-1000-eight
+    evidence:
+      - [apr26-kickoff, "Erie is out, it's only asset disposals now."]
+  - id: plants-1000-eight
+    statement: Plants in scope for 1000 add Greenville 1300 from the October 2026 close (eight plants).
     valid_from: 2026-10-01
     evidence:
       - [sep-kickoff, "Not in scope for September. In scope from October."]
+
+  - id: houston-count-shortage
+    statement: Houston 1400 year-end count short 186,420.55 USD (MI07 4900079915); MES scrap not posting since Oct 2025; fixed 01/22/2026.
+    valid_from: 2026-01-22
+    evidence:
+      - [je-register-2025-12, "Physical inventory 12/31/2025 count difference plant 1400 (MI07)"]
+      - [change-log-2026-01, "MES_CONF_1400"]
+  - id: audit-aje-keystone
+    statement: Audit adjustment AJE 1, Keystone Castings inv 77031 64,300.00 USD unrecorded liability, period 13 of 2025 (100038915).
+    valid_from: 2026-01-23
+    evidence:
+      - [je-register-2026-01, "100038915"]
+  - id: kc-teco
+    statement: Kansas City 1700 orders not TECO Jan-Mar 2026, variance skipped; mass TECO 05/01/2026, catch-up 142,880.40 unfavorable.
+    valid_from: 2026-05-01
+    evidence:
+      - [prod-variance-2026-04, "142880.40"]
 
   - id: crestline-reclass-posted
     statement: Crestline reclass 100045512 parked 2026-09-02 by S. Okafor, posted 2026-09-03 by D. Whitfield.
     valid_from: 2026-09-03
     evidence:
-      - [je-register-2026-08, "100045512,SA,08/31/2026,09/02/2026,14:40:27,EST,SOKAFOR,Posted,DWHITFIELD,09/03/2026"]
+      - [je-register-2026-08, "100045512 | SA | 08/31/2026 | 09/02/2026 | 14:40:27 | EST | SOKAFOR | Posted | DWHITFIELD | 09/03/2026"]
 
   - id: allied-fixed
     statement: Allied info records 5300014420/21/22 got 1 BX = 100 EA on 2026-10-14 (K. Alvarez); remaining six items cleared by MR11 5000034412 on 2026-11-05.
@@ -110,7 +146,7 @@ facts:
     statement: IC-2000-1030 was parked 11/03 23:10 CET (after the 23:00 CET cutoff) and posted 11/04 in period 11; Jonas Becker's recollection of posting before cutoff is contradicted by the system.
     valid_from: 2026-11-04
     evidence:
-      - [je-register-2026-10, "1800004890,KR,10/31/2026,11/03/2026,23:10:41,CET,JBECKER,Parked"]
+      - [je-register-2026-10, "1800004890 | KR | 10/31/2026 | 11/03/2026 | 23:10:41 | CET | JBECKER | Parked"]
       - [oct-review, "I'm pretty sure I posted that before the cutoff"]
 
 injected_instructions:

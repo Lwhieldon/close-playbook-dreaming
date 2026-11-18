@@ -175,7 +175,11 @@ MEETINGS = [
                 "August close. Labor Day is Monday the 7th, so BD5 is Tuesday the 8th. IC cutoff BD3 noon, "
                 "Thursday the 3rd. FX revaluation on BD3 with rate type M. Accruals at ten thousand.",
             ),
-            (DANA, "Plants in scope for 1000 are still Toledo and Dayton."),
+            (
+                DANA,
+                "Plants in scope for 1000 are the same seven as since April: Toledo, Dayton, Houston, Tulsa, "
+                "Charlotte, Kansas City and Reno.",
+            ),
             (SAM, "Dayton runs on the new scheduled job this month. I'll check the log this morning."),
         ],
     ),

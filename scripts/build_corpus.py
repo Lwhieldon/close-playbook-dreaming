@@ -6,12 +6,16 @@ What a dream reads after each close, shaped like real enterprise exports:
 
   data/corpus/uploads/             meeting transcripts a close team member uploaded to an agent session
                                    (Teams-style WebVTT with speaker tags)
-  data/corpus/erp/                 the monthly close evidence pack: JE register, reconciliation status,
-                                   GR/IR open items, PPV, intercompany matching, change log (CSV)
-  data/corpus/policies/            controller and treasury memos (text)
+  data/corpus/erp/                 the monthly close evidence pack, in the formats users pull it in:
+                                   JE register and reconciliation status (.xlsx from the report grid),
+                                   inventory and production variance by plant (.xlsx), GR/IR open items
+                                   (fixed-width spool .txt), the bank statement (BAI2 .dat), PPV,
+                                   intercompany matching and change logs (.csv), background job logs (.txt)
+  data/corpus/policies/            controller and treasury memos (signed .pdf; one .docx)
   data/corpus/assistant-sessions/  a few close-assistant sessions, named by session id as exported
 
-Story: Tarnwell Industries (fictional) closes May through October 2026. Rules change more than once,
+Story: Tarnwell Industries (fictional), 20 plants in three company codes, closes November 2025 through
+October 2026, including the 2025 year end. Rules change more than once,
 owners hand over, people in meetings say less than the system shows and sometimes misremember, the same
 problems recur, and safety probes (injected instructions, a leaked credential) are planted. A manifest
 mapping readable keys to files is written to data/manifest.yaml, outside the corpus folder, so an agent
@@ -31,7 +35,10 @@ import yaml
 
 sys.path.insert(0, str(Path(__file__).parent))
 import corpus_erp as erp  # noqa: E402
+import corpus_org as org  # noqa: E402
 import corpus_sessions as sessions  # noqa: E402
+import formats  # noqa: E402
+from corpus_early import EARLY_MEETINGS, EARLY_POLICIES  # noqa: E402
 from corpus_meetings import MEETINGS, ROUTINE  # noqa: E402
 from corpus_policies import POLICIES  # noqa: E402
 
@@ -97,7 +104,7 @@ STATUS_REASON = [
     "a small rounding difference",
     "one invoice that came in after cutoff",
 ]
-STATUS_CC = ["1000", "2000", "3000", "Toledo", "Dayton"]
+STATUS_CC = ["1000", "2000", "3000", *org.plant_names_for_status()]
 
 
 def routine_line(rng: random.Random) -> str:
@@ -158,44 +165,128 @@ def write(path: Path, text: str) -> None:
     path.write_text(text, encoding="utf-8", newline="\n")
 
 
+RUN_BY = "DWHITFIELD"
+DOCX_POLICIES = {"memo-owners-2026-07"}  # shared as a Word document; the rest are signed PDFs
+GRIR_WIDTHS = [5, 10, 5, 6, 22, 8, 4, 10, 7, 3, 7, 3, 11, 11, 4]
+
+
+def erp_files(period: str) -> dict[str, tuple[str, object]]:
+    """manifest key -> (relative path, content). Content is text, or a callable that writes the file."""
+    run_on = erp.CLOSE_START[period]
+    sel = [f"Company codes 1000-3000, posting period {period}", f"Run {run_on} by {RUN_BY}"]
+    files: dict[str, tuple[str, object]] = {}
+
+    def je_xlsx(path: Path) -> None:
+        extra = None
+        if period == "2026-01":
+            p13 = [r for doc in erp.PERIOD13_JES for r in doc]
+            extra = [("Period 13 (2025)", ["Company code 1000, special period 13 of 2025 (audit adjustments)"], p13)]
+        formats.xlsx_report(
+            path,
+            "Tarnwell Industries - Journal Entry Register",
+            sel,
+            erp.JE_COLUMNS,
+            erp.je_register_rows(period),
+            money=("Amount",),
+            sheets=extra,
+            sheet_name=f"Period {period[5:]} ({period[:4]})",
+        )
+
+    def recon_xlsx(path: Path) -> None:
+        formats.xlsx_report(
+            path, "Tarnwell Industries - Balance Sheet Reconciliation Status", sel, erp.RECON_COLUMNS,
+            erp.recon_rows(period),
+        )  # fmt: skip
+
+    def inv_xlsx(path: Path) -> None:
+        formats.xlsx_report(
+            path, "Tarnwell Industries - Inventory and WIP by Plant (period end)", sel, org.INV_COLUMNS,
+            org.inventory_rows(period), money=org.INV_MONEY,
+        )  # fmt: skip
+
+    def var_xlsx(path: Path) -> None:
+        formats.xlsx_report(
+            path, "Tarnwell Industries - Production Order Variance by Plant (KKS2/CO88 summary)", sel,
+            org.VAR_COLUMNS, org.variance_rows(period), money=org.VAR_MONEY,
+        )  # fmt: skip
+
+    files[f"je-register-{period}"] = (f"erp/JE_Register_{period}.xlsx", je_xlsx)
+    files[f"recon-status-{period}"] = (f"erp/Account_Recon_Status_{period}.xlsx", recon_xlsx)
+    files[f"icr-matching-{period}"] = (f"erp/ICR_Matching_{period}.csv", erp.icr(period))
+    files[f"plant-inventory-{period}"] = (f"erp/Inventory_WIP_by_Plant_{period}.xlsx", inv_xlsx)
+    files[f"prod-variance-{period}"] = (f"erp/Production_Order_Variance_by_Plant_{period}.xlsx", var_xlsx)
+    opening, tx = org.bank_transactions(period)
+    files[f"bank-{period}"] = (
+        f"erp/BAI2_FirstLakes_1000_Operating_{period}.dat",
+        formats.bai2(
+            sender="071000288",
+            receiver="TARNWELL01",
+            file_date=erp.LAST_DAY[period],
+            account="4471209938",
+            currency="USD",
+            opening=opening,
+            transactions=tx,
+        ),
+    )
+    for plant in ("1100", "1300"):
+        if (plant == "1100" and period in erp.ALLIED) or (plant == "1300" and period == "2026-10"):
+            rows = erp.grir_rows(plant, period)
+            files[f"grir-{plant}-{period}"] = (
+                f"erp/GRIR_Open_Items_{plant}_{period}.txt",
+                formats.spool_txt(
+                    f"Tarnwell Industries  GR/IR clearing 191100 - open items (RFWERE00)  Plant {plant}",
+                    [f"Key date {erp.LAST_DAY[period]}   Company code 1000   User {RUN_BY}   Run {run_on}"],
+                    list(zip(erp.GRIR_COLUMNS, GRIR_WIDTHS, strict=True)),
+                    rows,
+                    f"{len(rows)} open items listed.",
+                ),
+            )
+    if period in erp.PPV:
+        files[f"ppv-1100-{period}"] = (f"erp/PPV_by_Material_1100_{period}.csv", erp.ppv(period))
+    if period in erp.CHANGES:
+        files[f"change-log-{period}"] = (f"erp/Change_Log_{period}.csv", erp.change_log(period))
+    return files
+
+
+JOB_LOGS = [
+    ("joblog-dayton-2026-08", "erp/SM37_ZPP_PERIODEND_1200_2026-09-01.txt", org.job_log_dayton_aug),
+    ("joblog-dayton-rerun-2026-08", "erp/SM37_ZPP_SETTLE_1200_RERUN_2026-09-02.txt", org.job_log_dayton_aug_rerun),
+    ("joblog-kc-teco-2026-04", "erp/SM37_ZPP_TECO_1700_2026-05-01.txt", org.job_log_kc_apr),
+]
+
+
 def main() -> None:
     if CORPUS.exists():
         shutil.rmtree(CORPUS)
     manifest: dict[str, dict] = {}
 
-    for key, fname, date, attendees, lines in MEETINGS:
+    for key, fname, date, attendees, lines in sorted(EARLY_MEETINGS + MEETINGS, key=lambda m: m[2]):
         rel = f"uploads/{fname}"
         write(CORPUS / rel, render_vtt(key, date, attendees, lines))
         manifest[key] = {"file": rel, "kind": "meeting", "date": date}
 
-    for key, fname, date, text in POLICIES:
-        rel = f"policies/{fname}"
-        write(CORPUS / rel, text)
+    for key, fname, date, text in EARLY_POLICIES + POLICIES:
+        stem = fname.rsplit(".", 1)[0]
+        if key in DOCX_POLICIES:
+            rel = f"policies/{stem}.docx"
+            formats.docx_memo(CORPUS / rel, text)
+        else:
+            rel = f"policies/{stem}.pdf"
+            signer = "Elena Park, Treasury" if key.startswith("memo-trs") else "Dana Whitfield, Corporate Controller"
+            formats.pdf_memo(CORPUS / rel, text, signed_by=signer)
         manifest[key] = {"file": rel, "kind": "policy", "date": date}
 
     for period in erp.PERIODS:
-        files = {
-            f"je-register-{period}": (f"erp/JE_Register_{period}.csv", erp.je_register(period)),
-            f"recon-status-{period}": (f"erp/Account_Recon_Status_{period}.csv", erp.recon_status(period)),
-            f"icr-matching-{period}": (f"erp/ICR_Matching_{period}.csv", erp.icr(period)),
-        }
-        if period in erp.ALLIED:
-            files[f"grir-1100-{period}"] = (
-                f"erp/GRIR_Open_Items_1100_{period}.csv",
-                erp.grir_open_items("1100", period),
-            )
-        if period == "2026-10":
-            files[f"grir-1300-{period}"] = (
-                f"erp/GRIR_Open_Items_1300_{period}.csv",
-                erp.grir_open_items("1300", period),
-            )
-        if period in erp.PPV:
-            files[f"ppv-1100-{period}"] = (f"erp/PPV_by_Material_1100_{period}.csv", erp.ppv(period))
-        if period in erp.CHANGES:
-            files[f"change-log-{period}"] = (f"erp/Change_Log_{period}.csv", erp.change_log(period))
-        for key, (rel, text) in files.items():
-            write(CORPUS / rel, text)
+        for key, (rel, content) in erp_files(period).items():
+            if callable(content):
+                (CORPUS / rel).parent.mkdir(parents=True, exist_ok=True)
+                content(CORPUS / rel)
+            else:
+                write(CORPUS / rel, content)
             manifest[key] = {"file": rel, "kind": "erp", "period": period}
+    for key, rel, fn in JOB_LOGS:
+        write(CORPUS / rel, fn())
+        manifest[key] = {"file": rel, "kind": "erp", "date": rel.rsplit("_", 1)[1][:10]}
 
     for key, fn in sessions.SESSIONS:
         text = fn()
@@ -211,9 +302,13 @@ def main() -> None:
         + yaml.safe_dump(manifest, sort_keys=False),
     )
     files = [p for p in CORPUS.rglob("*") if p.is_file()]
-    print(f"Wrote {len(files)} files ({sum(p.stat().st_size for p in files):,} bytes) to {CORPUS}")
+    print(f"Wrote {len(files)} files ({sum(p.stat().st_size for p in files):,} bytes on disk) to {CORPUS}")
     for kind in ("meeting", "erp", "policy", "session"):
         print(f"  {kind:<8} {sum(1 for v in manifest.values() if v['kind'] == kind)}")
+    by_ext: dict[str, int] = {}
+    for f in files:
+        by_ext[f.suffix] = by_ext.get(f.suffix, 0) + 1
+    print("  formats  " + ", ".join(f"{k} {v}" for k, v in sorted(by_ext.items())))
 
 
 if __name__ == "__main__":

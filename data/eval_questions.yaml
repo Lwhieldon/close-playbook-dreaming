@@ -55,14 +55,13 @@ questions:
   - id: q05
     type: stale_fact
     question: Which plants are in scope for company code 1000 close checks?
-    expected: 1100 Toledo, 1200 Dayton and 1300 Greenville (Greenville in scope from the October 2026 close).
+    expected: Eight plants - 1100 Toledo, 1200 Dayton, 1400 Houston, 1500 Tulsa, 1600 Charlotte, 1700 Kansas City, 1800 Reno, and 1300 Greenville (in scope from the October 2026 close). Erie (1900) has been out of scope since the April 2026 close, after production stopped on 03/31/2026; only asset disposals remain.
     key_points:
-      - "1100 Toledo"
-      - "1200 Dayton"
-      - "1300 Greenville"
-      - "Greenville is in scope from the October 2026 close"
+      - "Toledo, Dayton, Houston, Tulsa, Charlotte, Kansas City and Reno (1100, 1200, 1400-1800)"
+      - "Greenville (1300) is in scope from the October 2026 close"
+      - "Erie (1900) is out of scope since the April 2026 close (production stopped 03/31/2026)"
     must_include: ["1300"]
-    evidence: [[sep-kickoff, "In scope from October."]]
+    evidence: [[sep-kickoff, "In scope from October."], [apr26-kickoff, "Erie is out, it's only asset disposals now."]]
 
   - id: q06
     type: stale_fact
@@ -108,7 +107,7 @@ questions:
     avoid:
       - "Says the reclass is still parked or that its status is unknown"
     must_include: ["100045512"]
-    evidence: [[je-register-2026-08, "SOKAFOR,Posted,DWHITFIELD,09/03/2026"]]
+    evidence: [[je-register-2026-08, "SOKAFOR | Posted | DWHITFIELD | 09/03/2026"]]
 
   - id: q10
     type: buried_detail
@@ -222,7 +221,7 @@ questions:
     avoid:
       - "Says the fee was posted before the cutoff"
     must_include: ["parked"]
-    evidence: [[je-register-2026-10, "23:10:41,CET,JBECKER,Parked"], [change-log-2026-10, "Posted as 1800004902 (period 11)"]]
+    evidence: [[je-register-2026-10, "23:10:41 | CET | JBECKER | Parked"], [change-log-2026-10, "Posted as 1800004902 (period 11)"]]
 
   - id: q19
     type: process
@@ -281,7 +280,7 @@ questions:
   - id: q24
     type: history
     question: How has the manual accrual threshold changed during 2026?
-    expected: $5,000 per vendor through the June close; $10,000 from the July close (controller memo 2026-07-15); $25,000 from the September close (FIN-POL-014, issued 2026-09-25).
+    expected: $5,000 per vendor from the January 2026 close (2026 close calendar memo; it was $2,500 in 2025) through the June close; $10,000 from the July close (controller memo 2026-07-15); $25,000 from the September close (FIN-POL-014, issued 2026-09-25).
     key_points:
       - "$5,000 per vendor through the June 2026 close"
       - "$10,000 from the July 2026 close (controller memo, 2026-07-15)"
@@ -390,3 +389,48 @@ questions:
       - "Used by both sides (controller decision, May 2026), not the agreement's transfer-pricing rate"
     must_include: ["invoice date"]
     evidence: [[may-review, "both sides use rate type M on the invoice date"]]
+
+  - id: q33
+    type: buried_detail
+    question: What did the 2025 year-end physical inventory find at Houston, and what caused it?
+    expected: Houston (plant 1400) was short 186,420.55 USD, almost all V-2200 series valve bodies; the count difference was posted with MI07 (document 4900079915). The cause was scrap at the valve body line not reaching the ERP after the new MES interface went live in October 2025 (good quantity posted, scrap did not). IT fixed the scrap field mapping on 01/22/2026, and Q1 2026 cycle counts were within tolerance.
+    key_points:
+      - "A shortage of about $186,420 at Houston (1400), mostly V-2200 valve bodies"
+      - "Cause: scrap was not posting from the new MES interface (live October 2025)"
+      - "Fixed on 01/22/2026 (scrap field mapping); Q1 cycle counts were clean"
+    must_include: ["scrap"]
+    evidence: [[je-register-2025-12, "Count difference V-2200 valve bodies, plant 1400"], [dec25-count, "the scrap quantity isn't coming across with the confirmations"], [change-log-2026-01, "AFRU-XMNGA (confirmed scrap)"]]
+
+  - id: q34
+    type: buried_detail
+    question: What adjustment came out of the 2025 year-end audit, and what is the lesson for the next year end?
+    expected: One adjustment from Hartwell & Crane LLP - an unrecorded liability for Keystone Castings invoice 77031 (64,300.00 USD) for December receipts, received 01/14/2026 and posted in special period 13 of 2025 as document 100038915. Lesson - search January invoices for December receipts before closing December.
+    key_points:
+      - "An unrecorded liability: Keystone Castings invoice for December receipts, $64,300"
+      - "Posted in special period 13 of 2025 (document 100038915)"
+      - "Lesson: search January invoices for December receipts before the year-end close"
+    must_include: ["Keystone"]
+    evidence: [[je-register-2026-01, "AJE 1 Hartwell & Crane: unrecorded liability Keystone Castings inv 77031"], [jan26-kickoff, "search January invoices for December receipts"]]
+
+  - id: q35
+    type: recurring_trap
+    question: Why were Kansas City's production order variances near zero in early 2026, and what fixed it?
+    expected: Kansas City (plant 1700) delivered orders were never set to technically complete (TECO), so variance calculation (KKS2) skipped them and costs sat in WIP from January to March 2026 (61, then 118, then 174 orders). Fixed in the April 2026 close with a mass TECO in COHV on 05/01 before the WIP run, giving a one-time catch-up of about 142,880 USD unfavorable; TECO was added to the plant's monthly checklist.
+    key_points:
+      - "Orders were left released, never set to TECO, so variance calculation skipped them (costs sat in WIP)"
+      - "January to March 2026"
+      - "Fixed in the April 2026 close with a mass TECO before the WIP run; TECO added to the monthly checklist"
+      - "A one-time catch-up variance of about $142,880 unfavorable"
+    points_needed: 3
+    must_include: ["TECO"]
+    evidence: [[mar26-kickoff, "never set to technically complete"], [prod-variance-2026-04, "Catch-up after mass TECO 05/01"], [joblog-kc-teco-2026-04, "174 orders set to TECO"]]
+
+  - id: q36
+    type: history
+    question: What was the manual accrual threshold for the December 2025 year-end close?
+    expected: $2,500 per vendor per month. The 2026 close calendar memo raised it to $5,000 starting with the January 2026 close.
+    key_points:
+      - "$2,500 per vendor per month"
+      - "It became $5,000 from the January 2026 close"
+    must_include: ["2,500"]
+    evidence: [[memo-year-end-2025, "Threshold $2,500 per vendor per month for the December close."], [memo-close-calendar-2026-01, "(Previously $2,500.)"]]

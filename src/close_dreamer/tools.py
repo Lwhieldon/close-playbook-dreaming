@@ -15,6 +15,8 @@ import re
 import threading
 from pathlib import Path
 
+from .extract import SUPPORTED, text_of
+
 MAX_FILE_BYTES = 100_000  # same cap the cookbook prompts give memory files
 MAX_READ_LINES = 2000
 MAX_GREP_HITS = 200
@@ -61,7 +63,7 @@ class FileTools:
             raise ToolError(f"{path} is a directory; use glob to list it")
         if not target.exists():
             raise ToolError(f"{path} does not exist")
-        lines = target.read_text(encoding="utf-8").splitlines()
+        lines = text_of(target).splitlines()  # PDFs, spreadsheets and Word files read as text
         offset = max(1, int(offset or 1))
         limit = max(1, min(int(limit or MAX_READ_LINES), MAX_READ_LINES))
         chunk = lines[offset - 1 : offset - 1 + limit]
@@ -119,7 +121,9 @@ class FileTools:
         for p in sorted(self.root.rglob("*")):
             if not p.is_file() or not _match(p.relative_to(self.root).as_posix(), pat):
                 continue
-            for i, line in enumerate(p.read_text(encoding="utf-8", errors="replace").splitlines(), 1):
+            if p.suffix.lower() not in SUPPORTED:
+                continue
+            for i, line in enumerate(text_of(p).splitlines(), 1):
                 if rx.search(line):
                     out.append(f"{self.display(p)}:{i}: {line.strip()[:300]}")
                     if len(out) >= MAX_GREP_HITS:

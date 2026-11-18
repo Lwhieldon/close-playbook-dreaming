@@ -26,7 +26,9 @@ sys.path.insert(0, str(DATA.parent / "src"))
 
 
 def normalize(path: Path) -> str:
-    text = path.read_text(encoding="utf-8")
+    from close_dreamer.extract import text_of  # PDFs, spreadsheets and Word files are checked as their text
+
+    text = text_of(path)
     if path.suffix == ".vtt":
         text = " ".join(re.findall(r"<v [^>]+>(.*?)</v>", text))
     return re.sub(r"\s+", " ", text).strip()
