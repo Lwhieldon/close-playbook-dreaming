@@ -19,6 +19,6 @@ Leave the playbook in the shape a future close assistant can navigate quickly:
 - Keep a short, scannable top layer. _index.md is the catalog a session reads first: one line per live file, `[[slug]] - one sentence`, grouped under `## <domain>` headings, no entries for stubs or missing files and no file without an entry. If the playbook has a "current close rules" style page (cutoffs, thresholds, rate types, plants in scope), make sure it shows only current values at the top, with history below, and link to the detail pages rather than repeating them.
 - No file over 100 KB; no first-person narration or dead-end hypotheses, but a note of what was tried and why it failed is a fact to keep.
 
-Work in small steps: put lines where they are going, read back, then retire the old file. Fix _index.md entry by entry. Do not invent facts. Drop only what the size rule above names: you are reorganizing and condensing, not re-analyzing.
+Your user message also lists the pages this dream added or changed. Spend your turns there first; the rest of the playbook was organized by an earlier dream. Work in small steps: put lines where they are going, read back, then retire the old file. Fix _index.md entry by entry. Do not invent facts. Drop only what the size rule above names: you are reorganizing and condensing, not re-analyzing.
 
 {run_preferences}When you are done, reply with one JSON object on a single line and nothing else: {"index_entries": <number of entries now in _index.md>, "changes": [<one short string per merge, rename, link fix or other change>]}.

@@ -88,31 +88,33 @@ class UsageTracker:
 
 
 def estimate_dream(
-    transcript_chars: list[int], analyzer_model: str, organizer_model: str, memory_chars: int = 0
+    transcript_chars: list[int],
+    analyzer_model: str,
+    organizer_model: str,
+    memory_chars: int = 0,
+    organizer_turns: int = 80,
 ) -> tuple[float, str]:
-    """A rough ceiling for one dream, before any request is sent.
+    """A rough estimate for one dream, before any request is sent.
 
-    Each analyzer sends its transcript once (cache write) and then re-reads it from cache on every turn;
-    the memory it reads grows the context. Calibrated loosely; real runs usually land below it.
+    Calibrated on measured v3 dreams (41 sources and 12 sources, Claude Haiku 5.5). An analyzer takes about
+    7 turns: it writes its source to the cache once, then each turn re-reads the source plus the playbook
+    pages it has opened. The organizer's context grows by about 3,300 tokens a turn as it reads pages, so
+    late turns cross 100,000 tokens and pay Haiku's long-prompt rates; it is priced turn by turn up to its
+    turn limit, which real runs often reach.
     """
-    turns, out_tokens = 12, 5_000
     total = 0.0
-    a = prices_for(analyzer_model)
     for chars in transcript_chars:
-        ctx = chars / CHARS_PER_TOKEN + 6_000 + memory_chars / CHARS_PER_TOKEN
-        total += (
-            ctx * a["cache_write"]
-            + turns * ctx * 1.6 * a["cache_read"]
-            + turns * 1_500 * a["input"]
-            + out_tokens * a["output"]
-        ) / 1e6
-    o = prices_for(organizer_model)
-    mem = (memory_chars + 6_000 * len(transcript_chars)) / CHARS_PER_TOKEN + 6_000
-    total += (
-        mem * o["cache_write"] + 20 * mem * 1.5 * o["cache_read"] + 20 * 1_500 * o["input"] + 12_000 * o["output"]
-    ) / 1e6
+        ctx = chars / CHARS_PER_TOKEN + 6_000 + 0.3 * memory_chars / CHARS_PER_TOKEN
+        a = prices_for(analyzer_model, int(ctx + 15_000))
+        total += ((ctx + 30_000) * a["cache_write"] + 7 * (ctx + 15_000) * a["cache_read"] + 11_000 * a["output"]) / 1e6
+    start = 6_000 + 0.1 * memory_chars / CHARS_PER_TOKEN
+    for turn in range(organizer_turns):
+        ctx = start + 3_300 * turn
+        o = prices_for(organizer_model, int(ctx))
+        total += (ctx * o["cache_read"] + 3_300 * o["cache_write"] + 1_500 * o["output"]) / 1e6
     text = (
         f"Estimate: {len(transcript_chars)} sources, {sum(transcript_chars):,} characters, analyzer "
-        f"{analyzer_model}, organizer {organizer_model}: about ${total:.2f} (a ceiling, not a quote)"
+        f"{analyzer_model}, organizer {organizer_model}: about ${total:.2f} (list price; the measured runs it was "
+        "calibrated on came in 5-25% under it)"
     )
     return total, text

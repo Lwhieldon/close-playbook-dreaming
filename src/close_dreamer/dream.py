@@ -176,7 +176,9 @@ def dream(
         client,
         model=models.organizer,
         system=organizer_system,
-        user_content=organizer_brief(playbook, source_bytes or sum(t.size for t in transcripts)),
+        user_content=organizer_brief(
+            playbook, source_bytes or sum(t.size for t in transcripts), memory.diff_stats(snap, playbook)
+        ),
         tools=tools,
         tracker=tracker,
         label="organizer",
@@ -195,10 +197,10 @@ def dream(
     return result
 
 
-def organizer_brief(playbook: Path, source_bytes: int) -> str:
+def organizer_brief(playbook: Path, source_bytes: int, changes: dict | None = None) -> str:
     size = sum(p.stat().st_size for p in Path(playbook).rglob("*.md"))
     target = int(memory.MAX_SOURCE_RATIO * 0.6 * source_bytes)  # aim well inside the lint limit
-    return (
+    brief = (
         f"The analyzers have finished. Organize the playbook at {MEM_DIR}.\n\n"
         f"Size: the playbook is now {size:,} bytes. The close record it covers is {source_bytes:,} bytes. "
         f"Target: under {target:,} bytes. "
@@ -209,6 +211,15 @@ def organizer_brief(playbook: Path, source_bytes: int) -> str:
             else "It is within the target; keep it that way."
         )
     )
+    touched = sorted(set((changes or {}).get("added", [])) | set((changes or {}).get("changed", [])))
+    if changes is not None:
+        names = ", ".join(touched[:80]) + (f" and {len(touched) - 80} more" if len(touched) > 80 else "")
+        brief += (
+            f"\n\nThis dream added or changed {len(touched)} pages: {names or 'none'}. Start with them. Open "
+            "other pages only to merge a duplicate, fix a link, settle an open line or meet the size target; "
+            "pages this dream did not touch were organized after the last dream."
+        )
+    return brief
 
 
 def parse_json_line(text: str) -> dict:

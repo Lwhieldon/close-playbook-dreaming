@@ -101,3 +101,24 @@ def test_parse_json_line_tolerates_wrapping():
     wrapped = 'Done.\n```json\n{"index_entries": 3, "changes": []}\n```'
     assert parse_json_line(wrapped) == {"index_entries": 3, "changes": []}
     assert parse_json_line("no json")["index_entries"] is None
+
+
+def test_organizer_brief_lists_the_pages_this_dream_touched(tmp_path):
+    from close_dreamer.dream import organizer_brief
+
+    (tmp_path / "ic-cutoff.md").write_text("x" * 500, encoding="utf-8")
+    brief = organizer_brief(
+        tmp_path, 1_000, {"added": ["houston-count.md"], "changed": ["ic-cutoff.md"], "removed": []}
+    )
+    assert "added or changed 2 pages: houston-count.md, ic-cutoff.md" in brief
+    assert "Target: under 300 bytes" in brief and "over the target" in brief
+    assert "added or changed" not in organizer_brief(tmp_path, 1_000)  # no diff given, no list
+
+
+def test_estimate_prices_long_organizer_turns_higher():
+    from close_dreamer.usage import estimate_dream
+
+    h = "claude-haiku-5-5"
+    short, _ = estimate_dream([5_000], h, h, organizer_turns=30)  # stays under 100K tokens
+    long, _ = estimate_dream([5_000], h, h, organizer_turns=60)  # late turns cross 100K tokens
+    assert long > 3 * short  # twice the turns, but the late ones pay long-prompt rates

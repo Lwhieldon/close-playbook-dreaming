@@ -311,7 +311,7 @@ def build_parser() -> argparse.ArgumentParser:
     range_args(s)
     playbook_arg(s)
     s.add_argument("--mode", choices=["local", "managed"], default="local")
-    s.add_argument("--budget", type=float, default=2.0, help="Stop when list-price spend passes this (USD)")
+    s.add_argument("--budget", type=float, default=4.0, help="Stop when list-price spend passes this (USD)")
     s.add_argument("--concurrency", type=int, default=4)
     s.add_argument("--instructions", help="Extra emphasis for the analyzers and organizer")
     s.add_argument("--store-id", help="Managed mode: update this memory store instead of creating one")
