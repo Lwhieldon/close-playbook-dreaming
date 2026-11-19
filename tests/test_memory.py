@@ -63,6 +63,24 @@ def test_size_warning_against_sources(tmp_path):
     assert not memory.lint(tmp_path, source_bytes=100_000).warnings
 
 
+def test_password_pattern_flags_values_not_words(tmp_path):
+    # stage A's watchlist tripped the old pattern with "ICR_RFC_SVC password: rotate before its expiry"
+    _accruals_page(tmp_path, "ICR_RFC_SVC password: rotate before its expiry date, not after.")
+    assert not memory.lint(tmp_path).secrets
+    _accruals_page(tmp_path, "password: Hunter-2026x")
+    assert memory.lint(tmp_path).secrets
+
+
+def test_lines_that_treat_a_missing_record_as_open_are_counted(tmp_path):
+    gaps = "\n".join(f"- Reversal {i} not seen in the Jan register." for i in range(memory.MAX_ABSENCE_LINES + 1))
+    _accruals_page(tmp_path, gaps + "\n- Evidence gaps: reversal 100038915 not in the January JE export.")
+    rep = memory.lint(tmp_path)
+    assert rep.absence_lines == memory.MAX_ABSENCE_LINES + 1  # the Evidence gaps line is not counted
+    assert rep.ok and any("missing from an export" in w for w in rep.warnings)  # a warning, not a failure
+    _accruals_page(tmp_path, "- Evidence gaps: reversal not in the January JE export.\n- Posted 09/03 (JE register).")
+    assert memory.lint(tmp_path).absence_lines == 0
+
+
 def test_stubs_are_not_indexed_or_linted_for_frontmatter(tmp_path):
     (tmp_path / "_index.md").write_text("[[new]] - new\n", encoding="utf-8")
     (tmp_path / "new.md").write_text("---\nname: new\ndescription: d\n---\nx\n", encoding="utf-8")

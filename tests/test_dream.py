@@ -165,3 +165,7 @@ def test_prompts_carry_the_step3_rules():
     org, ana = load_prompt("organizer"), load_prompt("analyzer")
     assert "close-watchlist.md" in org and "Status (as of" in org and "Cause:" in org
     assert "reason behind a rule" in ana
+    # stage A: gaps in one export became "open" items; both agents now treat absence as a check, not a status
+    assert "Absence is not evidence" in org and "Absence is not evidence" in ana
+    assert "Evidence gaps:" in org and "Evidence gaps:" in ana
+    assert "problem pages only" in org

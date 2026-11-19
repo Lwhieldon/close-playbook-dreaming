@@ -34,6 +34,9 @@ Your user message contains one source file inside <source> tags, with its kind a
   Never silently overwrite a value.
 - **Settle open lines.** When your source confirms, completes or refutes something the playbook marks as expected, planned, pending, parked, not confirmed or unverified, rewrite that line to the settled fact with its date and source (for example "Reclass 100045512 posted 09/03/2026 by D. Whitfield (JE register)"). Do not leave the old "not confirmed" line next to the new fact.
 - If a memory states something confidently but the source shows it was uncertain, downgrade it.
+- **Absence is not evidence.** Every export is a partial extract: a register covers one period, a report one plant or one run. A document or step missing from your source does not make anything open, unconfirmed or wrong, and does not undo a settled fact elsewhere in the playbook. Only positive evidence changes a claim: a record that shows a different status, amount or date (a JE register line showing a document parked, not posted, beats a meeting saying it was posted), or a source that says something is pending, requested, undecided or still on a list.
+- **A signed-off reconciliation is ERP evidence** of what its comment states (preparer and reviewer, with dates). Do not mark its statement unconfirmed because another export does not repeat it.
+- If a gap seems worth a look at the next close, add it to one `Evidence gaps:` line at the bottom of the topic page, worded as a check ("reversal document for 100038915 is not in the January JE export; the reconciliation says reversed in period 1"). An evidence gap never makes a problem open and never goes in a page's opening lines.
 
 ### Enrich
 Add what the playbook does not have yet:

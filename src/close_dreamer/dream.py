@@ -201,8 +201,10 @@ def dream(
 
 WHOLE_PLAYBOOK = (
     "\n\nNo analyzers ran before you: this pass covers the whole playbook, not one dream's pages. Build or "
-    "update close-watchlist.md, give every problem page a current Status line, and add a Cause line where a "
-    "problem's explanation spans pages. Read each page before you change it, and stay within the size target."
+    "update close-watchlist.md, settle or move to 'Evidence gaps:' every line that calls something open only "
+    "because a record was missing from an export, give each problem page a current Status line, and add a "
+    "Cause line where a problem's explanation spans pages. Read each page before you change it, and stay "
+    "within the size target."
 )
 
 

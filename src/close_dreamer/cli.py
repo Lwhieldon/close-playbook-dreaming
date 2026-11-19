@@ -207,6 +207,7 @@ def _save_dream_run(result, chosen, args) -> Path:
                     "secrets": lint.secrets,
                     "injections": lint.injections,
                     "warnings": lint.warnings,
+                    "absence_lines": lint.absence_lines,
                 }
                 if lint
                 else None,
