@@ -122,3 +122,46 @@ def test_estimate_prices_long_organizer_turns_higher():
     short, _ = estimate_dream([5_000], h, h, organizer_turns=30)  # stays under 100K tokens
     long, _ = estimate_dream([5_000], h, h, organizer_turns=60)  # late turns cross 100K tokens
     assert long > 3 * short  # twice the turns, but the late ones pay long-prompt rates
+
+
+def test_organize_runs_only_the_organizer_over_the_whole_playbook(tmp_path):
+    from close_dreamer.dream import organize
+
+    pb = tmp_path / "pb"
+    pb.mkdir()
+    page = "---\nname: allied\ndescription: Allied GR/IR\n---\nCleared 11/05.\n"
+    (pb / "allied.md").write_text(page, encoding="utf-8")
+    systems, briefs = [], []
+
+    def script(kw):
+        systems.append(kw["system"])
+        briefs.append(kw["messages"][0]["content"])
+        turn = (len(kw["messages"]) + 1) // 2
+        if turn == 1:
+            page = "---\nname: close-watchlist\ndescription: Open items\n---\n## Open going into the next close\n"
+            write = tool_block("write", {"path": "/memory/close-watchlist.md", "content": page}, "w")
+            return response([write], stop="tool_use")
+        return response([text_block('{"index_entries": 2, "changes": ["added watchlist"]}')])
+
+    result = organize(FakeClient(script), pb, tmp_path / "s", source_bytes=10_000, budget_usd=0.5, on_event=None)
+    assert all("organizer" in s and "memory maintenance agent" not in s for s in systems)  # no analyzers
+    assert "whole playbook" in briefs[0] and "close-watchlist.md" in briefs[0]
+    assert result.organizer["changes"] == ["added watchlist"]
+    assert result.changes["added"] == ["close-watchlist.md"] and result.snapshot.exists()
+    assert "Analyzed" not in result.report()
+
+
+def test_organize_refuses_an_empty_playbook(tmp_path):
+    from close_dreamer.dream import organize
+
+    client = FakeClient(lambda kw: pytest.fail("no request should be sent"))
+    with pytest.raises(ValueError, match="run a dream first"):
+        organize(client, tmp_path / "empty", tmp_path / "s", source_bytes=1, on_event=None)
+
+
+def test_prompts_carry_the_step3_rules():
+    from close_dreamer.dream import load_prompt
+
+    org, ana = load_prompt("organizer"), load_prompt("analyzer")
+    assert "close-watchlist.md" in org and "Status (as of" in org and "Cause:" in org
+    assert "reason behind a rule" in ana

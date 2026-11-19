@@ -39,6 +39,8 @@ Your user message contains one source file inside <source> tags, with its kind a
 Add what the playbook does not have yet:
 - Concrete details a future close needs: company codes, plants, GL accounts, document numbers, vendors, materials, amounts, transaction codes, job names, owners, dates, and the causal mechanism.
 - Recurring problems and their fixes: say when they happened, whether the fix is confirmed to work, and what to check next time.
+- **The reason behind a rule, a check or a failure**, in a short clause next to it ("ZCLS rows must exist for the exact key date, because treasury's last load before a weekend month end is dated Friday"). A rule without its reason is the line most likely to be applied wrongly; keep the reason even when you trim everything else.
+- **The cause, when your source gives it**, stated as a cause ("started because ..."), on the problem's page. If the cause depends on a fact already on another page (an owner change, a system go-live), say so and link it.
 - Process order and checks that prevent errors.
 - Trust: where a fact comes from (meeting, ERP export, policy, session) and when.
 Write current understanding in plain statements, not a story about the source.

@@ -59,7 +59,9 @@ class DreamResult:
     usage: UsageTracker | None = None
 
     def report(self) -> str:
-        lines = [f"Analyzed {len(self.analyzer_summaries)} transcripts, {len(self.failures)} failed."]
+        lines = []
+        if self.analyzer_summaries or self.failures:
+            lines.append(f"Analyzed {len(self.analyzer_summaries)} transcripts, {len(self.failures)} failed.")
         for name, why in self.failures.items():
             lines.append(f"  FAILED {name}: {why}")
         if self.organizer is not None:
@@ -192,6 +194,67 @@ def dream(
         extra_secrets=extra_secrets,
         extra_injections=extra_injections,
         source_bytes=source_bytes or sum(t.size for t in transcripts),
+    )
+    result.changes = memory.diff_stats(snap, playbook)
+    return result
+
+
+WHOLE_PLAYBOOK = (
+    "\n\nNo analyzers ran before you: this pass covers the whole playbook, not one dream's pages. Build or "
+    "update close-watchlist.md, give every problem page a current Status line, and add a Cause line where a "
+    "problem's explanation spans pages. Read each page before you change it, and stay within the size target."
+)
+
+
+def estimate_organize(playbook: Path, models: Models, turns: int = 40) -> tuple[float, str]:
+    mem_chars = sum(p.stat().st_size for p in Path(playbook).rglob("*.md")) if Path(playbook).exists() else 0
+    est, _ = estimate_dream([], models.analyzer, models.organizer, mem_chars, organizer_turns=turns)
+    return est, (
+        f"Estimate: organizer only over a {mem_chars:,}-byte playbook, {models.organizer}, about {turns} turns: "
+        f"about ${est:.2f} (list price)"
+    )
+
+
+def organize(
+    client,
+    playbook: Path,
+    snapshots: Path,
+    *,
+    source_bytes: int,
+    models: Models | None = None,
+    budget_usd: float = 1.5,
+    instructions: str | None = None,
+    label: str = "organize",
+    extra_secrets: list[str] | None = None,
+    extra_injections: list[str] | None = None,
+    on_event: Callable[[str], None] | None = print,
+) -> DreamResult:
+    """Run only the organizer over the whole playbook (no analyzers, no new sources).
+
+    Useful after changing the organizer's instructions: it applies them to an existing playbook for the
+    cost of one organizer pass instead of a full dream. A snapshot is kept, as for a dream."""
+    models = models or Models()
+    playbook = Path(playbook)
+    if not any(playbook.rglob("*.md")):
+        raise ValueError(f"No playbook pages in {playbook}: run a dream first.")
+    snap = memory.snapshot(playbook, snapshots, label)
+    tracker = UsageTracker(budget_usd=budget_usd)
+    result = DreamResult(snapshot=snap, usage=tracker)
+    system = fill(load_prompt("organizer"), mem_dir=MEM_DIR, run_preferences=preferences(instructions, "organizer"))
+    out = run_agent(
+        client,
+        model=models.organizer,
+        system=system,
+        user_content=organizer_brief(playbook, source_bytes) + WHOLE_PLAYBOOK,
+        tools=FileTools(playbook, mount=MEM_DIR),
+        tracker=tracker,
+        label="organizer",
+        max_turns=80,
+        on_event=on_event,
+    )
+    result.organizer = parse_json_line(out.text)
+    result.lint = memory.lint(
+        playbook, extra_secrets=extra_secrets, extra_injections=extra_injections, source_bytes=source_bytes
     )
     result.changes = memory.diff_stats(snap, playbook)
     return result

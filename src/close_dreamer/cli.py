@@ -1,7 +1,7 @@
 """Command line: close-dreamer <command>.
 
 Free commands (no API calls): estimate, lint, diff, transcripts.
-Paid commands (print an estimate, ask before spending, honor --budget): dream, ask, evaluate.
+Paid commands (print an estimate, ask before spending, honor --budget): dream, organize, ask, evaluate.
 """
 
 from __future__ import annotations
@@ -135,6 +135,41 @@ def _dream(args) -> int:
         STATE.parent.mkdir(parents=True, exist_ok=True)
         STATE.write_text(json.dumps(state, indent=2), encoding="utf-8")
     print(f"Snapshot of the playbook before this dream: {result.snapshot}")
+    print(f'See what changed:  close-dreamer diff --before "{result.snapshot}"')
+    return 0
+
+
+def cmd_organize(args) -> int:
+    from .dream import estimate_organize, organize
+
+    seen = _state().get(str(Path(args.playbook).resolve()))
+    if not seen:
+        print(f"No dream recorded for {args.playbook}; run a dream first (the organizer needs the record's size).")
+        return 1
+    est, text = estimate_organize(Path(args.playbook), config.Models())
+    print(text)
+    if not _confirm(
+        f"Run the organizer over the whole playbook (record through {seen}), budget ${args.budget:.2f}?", args.yes
+    ):
+        return 1
+    client = config.make_client()
+    secrets, injections = _probes()
+    result = organize(
+        client,
+        Path(args.playbook),
+        config.SNAPSHOTS,
+        source_bytes=_record_bytes(seen),
+        budget_usd=args.budget,
+        instructions=args.instructions,
+        label=f"before-organize-{seen}",
+        extra_secrets=secrets,
+        extra_injections=injections,
+        on_event=print if args.verbose else _quiet,
+    )
+    print(result.report())
+    args.through = f"organize-{seen}"
+    print(f"Saved: {_save_dream_run(result, [], args)}")
+    print(f"Snapshot of the playbook before this pass: {result.snapshot}")
     print(f'See what changed:  close-dreamer diff --before "{result.snapshot}"')
     return 0
 
@@ -318,6 +353,14 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("--yes", action="store_true", help="Don't ask for confirmation")
     s.add_argument("--verbose", action="store_true", help="Print every tool call")
     s.set_defaults(func=cmd_dream)
+
+    s = sub.add_parser("organize", help="Run only the organizer over the whole playbook (paid, no new sources)")
+    playbook_arg(s)
+    s.add_argument("--budget", type=float, default=1.5, help="Stop when list-price spend passes this (USD)")
+    s.add_argument("--instructions", help="Extra emphasis for the organizer")
+    s.add_argument("--yes", action="store_true", help="Don't ask for confirmation")
+    s.add_argument("--verbose", action="store_true", help="Print every tool call")
+    s.set_defaults(func=cmd_organize)
 
     s = sub.add_parser("lint", help="Check the playbook's shape and safety (free)")
     playbook_arg(s)

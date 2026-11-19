@@ -10,7 +10,8 @@ from close_dreamer.usage import UsageTracker
 
 def test_questions_load_and_have_unique_ids():
     qs = ev.load_questions(config.DATA / "eval_questions.yaml")
-    assert len(qs) == 36 and len({q["id"] for q in qs}) == 36
+    assert len(qs) == 40 and len({q["id"] for q in qs}) == 40
+    assert [q["id"] for q in qs if q.get("holdout")] == ["q37", "q38", "q39", "q40"]
 
 
 def test_must_include_is_case_insensitive():

@@ -434,3 +434,67 @@ questions:
       - "It became $5,000 from the January 2026 close"
     must_include: ["2,500"]
     evidence: [[memo-year-end-2025, "Threshold $2,500 per vendor per month for the December close."], [memo-close-calendar-2026-01, "(Previously $2,500.)"]]
+
+  # Held out (q37-q40): written on 2026-11-19 from the corpus only, after the v3 step 2 results and before
+  # the step 3 prompt changes ran, and never used to write the dream prompts. They check that the step 3
+  # changes (watchlist, status lines, cause lines) help synthesis in general, not just on q26-q30.
+
+  - id: q37
+    type: synthesis
+    holdout: true
+    question: What problems have we had with Keystone Castings over the past year, and are any still open?
+    expected: Two, both settled. (1) The 2025 year-end audit (Hartwell & Crane) found an unrecorded liability - Keystone invoice 77031, 64,300.00 USD for December receipts, received 01/14/2026 - posted in special period 13 of 2025 as document 100038915 and reversed in period 01 when the invoice posted. (2) In March 2026 invoice 77120 (38,940.00 USD) was paid twice in two F110 payment runs on 03/18; cash found it on the bank statement, it was booked as a vendor receivable (100040215), the vendor was payment-blocked on 04/02, the refund arrived 04/22 (100040988) and the block was removed 04/23. Dana asked for the payment-run duplicate check to be fixed; the record does not confirm that fix.
+    key_points:
+      - "The 2025 year-end audit adjustment: Keystone invoice 77031, $64,300 for December receipts, an unrecorded liability posted in special period 13"
+      - "The March 2026 duplicate payment of invoice 77120, $38,940, in two F110 runs on 03/18"
+      - "The refund was received on 04/22/2026 and the vendor's payment block was removed"
+      - "The fix to the payment-run duplicate check is not confirmed in the record"
+    points_needed: 3
+    deductions:
+      - "Says the payment-run duplicate check was fixed"
+    must_include: ["38,940"]
+    evidence: [[je-register-2026-03, "Keystone Castings duplicate payment inv 77120 - receivable from vendor"], [recon-status-2026-04, "Keystone refund 38,940.00 received 04/22 (100040988)."], [mar26-review, "I want the payment run check fixed"], [je-register-2026-01, "AJE 1 Hartwell & Crane: unrecorded liability Keystone Castings inv 77031"]]
+
+  - id: q38
+    type: synthesis
+    holdout: true
+    question: What lessons from the 2025 year end should we apply at the December 2026 year-end close?
+    expected: (1) Houston's 12/31/2025 count found a 186,420.55 USD shortage because scrap from the new MES interface (live October 2025) was not posting; it was fixed 01/22/2026, but check that interface and scrap postings are complete before the counts. (2) The audit's one adjustment was an unrecorded Keystone invoice (64,300.00 USD) for December receipts, so search January invoices for December receipts before closing December (the 2025 memo kept the AP search open to January 20). (3) Audit adjustments post in special period 13, only with controller approval. (4) Use the current rules, not the 2025 memo's - manual accrual threshold $25,000 per vendor per month (was $2,500), IC cutoff BD2 5:00 pm ET (was BD4 noon), FX valuation rate type ZCLS (was M).
+    key_points:
+      - "Houston's count shortage (about $186,420) came from MES scrap not posting; check interface and scrap postings before the counts"
+      - "Search January invoices for December receipts (the $64,300 Keystone unrecorded liability)"
+      - "Audit adjustments go in special period 13, with controller approval"
+      - "Apply current rules, not the 2025 memo: threshold $25,000 (not $2,500), IC cutoff BD2 5 pm ET (not BD4 noon), rate type ZCLS (not M)"
+    points_needed: 3
+    deductions:
+      - "Gives a 2025 year-end rule (threshold $2,500, BD4 noon cutoff or rate type M) as the rule for the 2026 year end"
+    must_include: ["January"]
+    evidence: [[memo-year-end-2025, "Audit adjustments post in special"], [dec25-count, "the scrap quantity isn't coming across with the confirmations"], [jan26-kickoff, "search January invoices for December receipts"]]
+
+  - id: q39
+    type: synthesis
+    holdout: true
+    question: Which plants have started or stopped since the 2025 year end, and what does each mean for the close?
+    expected: Erie (1900) stopped production on 03/31/2026 (controller memo of 03/16); stock moved to Toledo at standard and open orders were settled in the March close. It has been out of the production and inventory close checks since the April 2026 close; its fixed assets stay under company code 1000 until disposal, and fixed assets owns the disposal accounting. Greenville (1300) went live under 1000 on 09/30/2026 from a legacy migration; it was not in scope for September and is in scope from the October close. Tessa Lund is its plant accountant and Sam Okafor took its costing; its legacy ZM GR/IR items are excluded from aging and tracked on a separate list.
+    key_points:
+      - "Erie (1900) stopped production on 03/31/2026 and has been out of the close checks since the April 2026 close"
+      - "Erie's fixed assets stay under 1000 until disposal; only asset disposals remain"
+      - "Greenville (1300) went live under 1000 on 09/30/2026 and is in scope from the October 2026 close"
+      - "Greenville: Tessa Lund is the plant accountant, Sam Okafor does costing, and legacy ZM items are tracked separately"
+    points_needed: 3
+    must_include: ["Greenville", "Erie"]
+    evidence: [[memo-erie-2026-03, "Erie (plant 1900) stops production on March 31, 2026."], [apr26-kickoff, "Erie is out, it's only asset disposals now."], [sep-kickoff, "Tessa Lund is the plant accountant there."], [oct-greenville-walkthrough, "please take Greenville costing as well"]]
+
+  - id: q40
+    type: synthesis
+    holdout: true
+    question: What has gone wrong with period-end production order processing across our plants this year?
+    expected: Kansas City (1700) left delivered orders released instead of TECO from January to March 2026, so variance calculation skipped them; a mass TECO on 05/01 in the April close gave a catch-up of about 142,880 USD unfavorable, and TECO went on the plant checklist. At Dayton (1200) in the May close a new order for P-7801 had no settlement rule; Sam added it in KO02 and reran, and asked master data to check the order type's settlement profile. In August Dayton's new scheduled job ran settlement (CO88) before WIP (KKAO) and variance (KKS2), so nothing settled; Sam reversed and reran, and IT was asked to chain the steps (not confirmed done). The right order is WIP, then variance, then settlement.
+    key_points:
+      - "Kansas City: orders not set to TECO from January to March 2026, so variances were skipped; mass TECO and a catch-up of about $142,880 in the April close"
+      - "Dayton, May: a new order (P-7801) had no settlement rule; added in KO02 and rerun"
+      - "Dayton, August: the scheduled job ran settlement (CO88) before WIP and variance; reversed and rerun, IT asked to chain the steps"
+      - "The order is WIP (KKAO), variance (KKS2), then settlement (CO88)"
+    points_needed: 3
+    must_include: ["TECO"]
+    evidence: [[joblog-kc-teco-2026-04, "174 orders set to TECO"], [may-kickoff, "no settlement rule"], [aug-standup-grir-dayton, "the new scheduled job ran settlement first"]]
