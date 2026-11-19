@@ -64,8 +64,8 @@ class FileTools:
         if not target.exists():
             raise ToolError(f"{path} does not exist")
         lines = text_of(target).splitlines()  # PDFs, spreadsheets and Word files read as text
-        offset = max(1, int(offset or 1))
-        limit = max(1, min(int(limit or MAX_READ_LINES), MAX_READ_LINES))
+        offset = max(1, _whole("offset", offset, 1))
+        limit = max(1, min(_whole("limit", limit, MAX_READ_LINES), MAX_READ_LINES))
         chunk = lines[offset - 1 : offset - 1 + limit]
         numbered = "\n".join(f"{i:>5}\t{line}" for i, line in enumerate(chunk, start=offset))
         more = len(lines) - (offset - 1 + len(chunk))
@@ -213,12 +213,24 @@ class FileTools:
                 return getattr(self, name)(**args), False
         except ToolError as exc:
             return f"Error: {exc}", True
-        except TypeError as exc:  # missing or unexpected arguments
+        except (TypeError, ValueError) as exc:  # missing, unexpected or malformed arguments
             return f"Error: bad arguments for {name}: {exc}", True
 
     def _writable(self) -> None:
         if self.read_only:
             raise ToolError("this file system is read-only")
+
+
+def _whole(name: str, value, default: int) -> int:
+    """A line number from the model. It sometimes sends a range such as [8, 35] or "8-35"; say how to page."""
+    if value is None or value == "":
+        return default
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        raise ToolError(
+            f"{name} must be one whole number, not {value!r}; to read lines 8 to 35, use offset=8 and limit=28"
+        ) from None
 
 
 def _match(rel: str, pattern: str) -> bool:

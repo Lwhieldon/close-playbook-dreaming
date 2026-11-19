@@ -58,6 +58,15 @@ def test_bad_arguments_are_errors_not_crashes(fs):
     assert err
 
 
+@pytest.mark.parametrize("bad", [{"offset": [8, 35]}, {"offset": "[8, 35]"}, {"limit": "8-35"}, {"offset": 1.5j}])
+def test_a_line_range_instead_of_a_number_is_an_error_the_agent_can_fix(fs, bad):
+    # v3 step 2 lost two analyzer files when the model sent offset as a pair and int() raised ValueError
+    fs.call("write", {"path": "a.csv", "content": "x\n" * 50})
+    text, err = fs.call("read", {"path": "a.csv", **bad})
+    assert err and "one whole number" in text
+    assert "10\tx" in fs.call("read", {"path": "a.csv", "offset": "10", "limit": 2})[0]  # numeric strings still work
+
+
 def test_multitools_routes_reads_and_searches_all_mounts(tmp_path):
     from close_dreamer.tools import MultiTools
 
