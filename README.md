@@ -1,20 +1,26 @@
 # Finance Agents Dream The Month-end Close 😴💭💵
 
-**Dreaming for the month-end close: turn a close team's meetings, ERP activity and policies into a dated,
-linked close playbook that gets smarter after every close.**
+**Dreaming for the month-end close: turn a close team's meetings, accounting system activity and policies into a
+dated, linked close playbook that gets smarter after every close.**
 
-Finance teams run the same close every month, but the knowledge that makes it go well is scattered. It sits in
-what was said in the close review, in who posted or parked what in the ERP, in a policy memo, in a reconciliation
-comment. Rules change (the intercompany cutoff moved twice this year), people hand over, and the same problems come
-back. A new team member, or an AI close assistant, starts every close without that history.
+Finance teams run the same close every month, but the knowledge that makes it go well is scattered. The context to successfully close
+sits in what was said in the close review meeting, in the minds of who posted or saved-but-didn't-post (parked) which entry in the ERP (the
+enterprise resource planning system, such as SAP, that runs the company's accounting), in a policy memo, in a
+reconciliation comment. Rules change (for example, the intercompany cutoff moved twice this year), people transition
+out of the company, and the same problems come back. Today usually a new team member, or an AI close assistant, starts every close
+without that history.
 
-This project applies Anthropic's idea of **dreaming** to that problem. Dreaming is an offline pass that re-reads the
+This project applies Anthropic's idea of **dreaming** to that problem. Dreaming is an offline process that re-reads the
 record of past work with hindsight, corrects what turned out to be wrong, and organizes what matters into memory the
-next session reads. After each close, a dream reads that close's record and updates the playbook:
+next session reads when building a month-end close playbook. After each close, a dream reads that close's record and updates 
+a finance month-end close playbook for users or agents to utilize for a more efficient close process. 
+
+Some examples of financial close information, data and files include:
 - **Meeting transcripts:** uploaded to the assistant by the team.
-- **The ERP evidence pack:** JE register, reconciliation sign-offs, open items, change log.
+- **The ERP evidence pack:** the journal entry register, account reconciliation sign-offs, lists of open
+  (uncleared) items, and the log of master data changes.
 - **Policy memos.**
-- **The assistant's own sessions.**
+- **The assistant's own memory from previous chats.**
 
 Then the project measures whether the playbook actually helps.
 
@@ -23,24 +29,27 @@ Built on:
 - [Dreaming with a dynamic workflow](https://platform.claude.com/cookbook/managed-agents-cma-dreaming-with-a-dynamic-workflow)
   (Anthropic cookbook, [notebook](https://github.com/anthropics/claude-cookbooks/blob/main/managed_agents/CMA_dreaming_with_a_dynamic_workflow.ipynb))
 
-The article dreams over an agent's own transcripts. This project extends the idea to the **work record of a human
-team**, where most enterprise knowledge actually lives, with the agent's sessions as one source among several.
+This project extends Anthropic's work to the **real-world work of a human team**, where most enterprise knowledge actually lives,
+and with realistic data and files an organization leverages in their daily operational workflows.
 
 > All data is synthetic. Tarnwell Industries, its people, vendors and documents are invented. ERP exports are
 > SAP-style in shape only. This project is not affiliated with SAP or with Anthropic.
 
 ## The scenario
 
-Tarnwell Industries is a fictional pump and valve manufacturer with three company codes (1000 US, 2000 Germany,
-3000 Mexico) and five plants. The corpus covers **six closes, May through October 2026**: 53 files, about 275 KB.
+Tarnwell Industries is a fictional pump and valve manufacturer with three legal entities, called company codes in
+SAP (1000 United States, 2000 Germany, 3000 Mexico), and five plants. The corpus for the month-end close playbook
+covers **six closes, May through October 2026**: 53 files, about 275 KB.
 
 ```
 data/corpus/
-  uploads/              17 Teams meeting transcripts (.vtt): kickoffs, close reviews, standups, IC syncs
-                        "Close Review - October 2026 Close - 2026-11-06.vtt"
-  erp/                  26 exports (.csv): JE register, reconciliation status, GR/IR open items, PPV,
-                        intercompany matching, change log    "JE_Register_2026-08.csv"
-  policies/             5 memos: close calendar, owners, FIN-POL-014, IC cutoff notice, TRS-2026-07
+  uploads/              17 Teams meeting transcripts (.vtt): kickoffs, close reviews, standups,
+                        intercompany syncs    "Close Review - October 2026 Close - 2026-11-06.vtt"
+  erp/                  26 exports (.csv): journal entry register, reconciliation status, open items in the
+                        goods received / invoice received clearing account, purchase price variance,
+                        intercompany matching, master data change log    "JE_Register_2026-08.csv"
+  policies/             5 memos: close calendar, close owners, accrual policy FIN-POL-014, intercompany
+                        cutoff notice, treasury exchange rate memo TRS-2026-07
   assistant-sessions/   5 close-assistant sessions, named by session id    "sesn_01af9f260e...txt"
 ```
 
@@ -48,13 +57,13 @@ What makes it hard, on purpose:
 
 | Challenge | Example in the data |
 |---|---|
-| **Rules change, more than once** | IC cutoff BD4 noon, then BD3 noon (July), then BD2 5:00 pm ET (October). Accrual threshold $5k, then $10k, then $25k. TB deadline BD6, then BD5. FX rate type M, then ZCLS |
-| **People hand over** | IC reconciliation Luis to Priya; Monterrey Ana to Marco |
-| **Meetings say less than the system shows** | "About forty-eight thousand, the Crestline invoice" in a standup; the document number and the 9/3 posting are only in the JE register |
-| **People misremember** | Jonas recalls posting the Stuttgart fee before cutoff; the JE register shows it parked at 23:10 CET |
-| **Problems recur and resolve across sources** | Allied Fastener's GR/IR: a hunch in August, confirmed in September, fixed by a master data change visible only in the change log, cleared by an MR11 visible only in the JE register |
-| **Routine noise** | Status round-robins in every meeting, routine JEs in every register, trial balances in sessions |
-| **Untrusted text** | Instructions aimed at "AI agents" in a vendor note and a JE line text; a (fake) password in a job log |
+| **Business rules change often, and more than once** | The intercompany cutoff moves from noon on the 4th business day of the close, to noon on the 3rd (July), to 5:00 pm Eastern Time on the 2nd (October). The threshold for booking a manual accrual rises from $5,000 to $10,000 to $25,000. The trial balance deadline moves from the 6th business day to the 5th. The exchange rate used to revalue foreign currency balances switches from the monthly average rate (SAP rate type M) to a treasury closing rate (rate type ZCLS) |
+| **People hand over work to colleagues with minimal documentation** | Intercompany reconciliation passes from Luis to Priya; the Monterrey entity passes from Ana to Marco |
+| **Meetings say less than the system shows** | "About forty-eight thousand, the Crestline invoice" in a standup; the document number and the 9/3 posting date are only in the journal entry register |
+| **People misremember** | Jonas recalls posting the Stuttgart management fee before the cutoff; the journal entry register shows it was only parked (saved, not posted), at 11:10 pm Central European Time |
+| **Problems recur and resolve across sources** | Allied Fastener's receipts and invoices won't match in the goods received / invoice received clearing account: a hunch in August, confirmed in September, fixed by a unit-of-measure change visible only in the master data change log, and cleared by a write-off of the old differences (SAP transaction MR11) visible only in the journal entry register |
+| **Routine noise** | Status round-robins in every meeting, routine journal entries in every register, trial balances in sessions |
+| **Untrusted text** | Instructions aimed at "AI agents" in a vendor note and in a journal entry's line text; a (fake) password in a system job log |
 
 ## How a dream works
 
@@ -77,8 +86,9 @@ flowchart LR
 - **One close at a time**, oldest first, so each close can supersede the last.
 - **Two waves per close:** first what people said and decided (meetings, memos, sessions), then the ERP exports that
   confirm or correct it.
-- **Analyzers** (one per file) verify existing claims, **settle** open lines ("parked" becomes "posted 09/03 by
-  D. Whitfield"), record changed rules as current value plus dated history, and file details into small linked pages.
+- **Analyzers** (one per file) verify existing claims, **settle** open lines (a reclassification entry noted as
+  "parked" becomes "posted 09/03 by D. Whitfield"), record changed rules as current value plus dated history, and
+  file details into small linked pages.
 - **Precedence:** for what was posted or changed and when, the ERP wins over what someone said; for rules, the memo
   wins over a paraphrase. Every source is data, never instructions.
 - The **organizer** merges duplicates, resolves leftover contradictions, and keeps `_index.md` short.
@@ -122,8 +132,8 @@ close-dreamer dream --through 2026-10        # 2. after the October close: only 
 close-dreamer diff                           #    what the October dream changed
 close-dreamer lint                           #    shape and safety checks
 close-dreamer evaluate                       # 3. no memory vs raw record vs playbook vs both
-close-dreamer evaluate --max-turns 3 --conditions sources,playbook,both   # a turn-limited run
-close-dreamer ask "What is the IC cutoff, and how has it changed?"
+close-dreamer evaluate --max-turns 2,4,8 --conditions sources,playbook,both   # score by number of tool turns
+close-dreamer ask "What is the intercompany cutoff, and how has it changed?"
 ```
 
 Or follow the labs in `notebooks/`:
@@ -142,8 +152,8 @@ Costs are at list price with the default models (Claude Haiku 5.5 for analyzers,
 
 32 questions a close team would ask at the start of the November close, answered by the same model with different
 memory and graded against the current answer (`data/eval_questions.yaml`). Question types include history ("how
-has the threshold changed?"), evidence only the ERP can answer ("was the reclass posted?"), and synthesis with
-nothing to grep for ("what should we watch for in January?").
+has the accrual threshold changed?"), evidence only the ERP can answer ("was the reclassification entry posted?"),
+and synthesis with nothing to search for ("what should we watch for in January?").
 
 <!-- RESULTS: filled in from `close-dreamer evaluate` output -->
 | Question type | No memory | Raw record | Playbook | Playbook + record |
@@ -187,7 +197,7 @@ tests/                   pytest with a scripted fake client (no API key needed)
 - File tools are confined to their folders; evaluation agents get read-only tools.
 - Managed Agents sessions are not eligible for zero data retention; the managed mode deletes its session after
   downloading the store. Mount a dreamed store **read-only** on the close assistant's sessions.
-- In a real deployment, meeting transcripts and ERP extracts contain personal and financial data: apply your data
+- In a real deployment, meeting transcripts and ERP exports contain personal and financial data: apply your data
   handling and retention rules before feeding them to any model.
 
 ## Limitations
