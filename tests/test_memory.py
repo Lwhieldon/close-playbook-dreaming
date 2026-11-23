@@ -79,6 +79,10 @@ def test_lines_that_treat_a_missing_record_as_open_are_counted(tmp_path):
     assert rep.ok and any("missing from an export" in w for w in rep.warnings)  # a warning, not a failure
     _accruals_page(tmp_path, "- Evidence gaps: reversal not in the January JE export.\n- Posted 09/03 (JE register).")
     assert memory.lint(tmp_path).absence_lines == 0
+    # the dreams also file gaps as bullets under an "## Evidence gaps" heading; those are not counted either
+    body = "## Evidence gaps\n- Reversal not in the September register.\n## History\n- Fee not in any export."
+    _accruals_page(tmp_path, body)
+    assert memory.lint(tmp_path).absence_lines == 1
 
 
 def test_stubs_are_not_indexed_or_linted_for_frontmatter(tmp_path):

@@ -475,15 +475,15 @@ questions:
     type: synthesis
     holdout: true
     question: Which plants have started or stopped since the 2025 year end, and what does each mean for the close?
-    expected: Erie (1900) stopped production on 03/31/2026 (controller memo of 03/16); stock moved to Toledo at standard and open orders were settled in the March close. It has been out of the production and inventory close checks since the April 2026 close; its fixed assets stay under company code 1000 until disposal, and fixed assets owns the disposal accounting. Greenville (1300) went live under 1000 on 09/30/2026 from a legacy migration; it was not in scope for September and is in scope from the October close. Tessa Lund is its plant accountant and Sam Okafor took its costing; its legacy ZM GR/IR items are excluded from aging and tracked on a separate list.
+    expected: Erie (1900) stopped production on 03/31/2026 (controller memo of 03/16); stock moved to Toledo at standard and open orders were settled in the March close. It has been out of the production and inventory close checks since the April 2026 close; its fixed assets stay under company code 1000 until disposal, and fixed assets owns the disposal accounting. Greenville (1300) went live under 1000 on 10/01/2026 (its legacy cutover items are dated 09/30); it was not in scope for September and is in scope from the October close. Tessa Lund is its plant accountant and Sam Okafor took its costing; its legacy ZM GR/IR items are excluded from aging and tracked on a separate list.
     key_points:
       - "Erie (1900) stopped production on 03/31/2026 and has been out of the close checks since the April 2026 close"
       - "Erie's fixed assets stay under 1000 until disposal; only asset disposals remain"
-      - "Greenville (1300) went live under 1000 on 09/30/2026 and is in scope from the October 2026 close"
+      - "Greenville (1300) went live under 1000 on 10/01/2026 and is in scope from the October 2026 close"
       - "Greenville: Tessa Lund is the plant accountant, Sam Okafor does costing, and legacy ZM items are tracked separately"
     points_needed: 3
     must_include: ["Greenville", "Erie"]
-    evidence: [[memo-erie-2026-03, "Erie (plant 1900) stops production on March 31, 2026."], [apr26-kickoff, "Erie is out, it's only asset disposals now."], [sep-kickoff, "Tessa Lund is the plant accountant there."], [oct-greenville-walkthrough, "please take Greenville costing as well"]]
+    evidence: [[memo-erie-2026-03, "Erie (plant 1900) stops production on March 31, 2026."], [apr26-kickoff, "Erie is out, it's only asset disposals now."], [sep-kickoff, "goes live today under 1000"], [sep-kickoff, "Tessa Lund is the plant accountant there."], [oct-greenville-walkthrough, "please take Greenville costing as well"]]
 
   - id: q40
     type: synthesis

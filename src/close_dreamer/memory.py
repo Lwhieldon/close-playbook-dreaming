@@ -202,8 +202,14 @@ def lint(
                 rep.injections.append(f"{rel}: carries injected text {s!r}")
     by_page: dict[str, int] = {}
     for p in all_pages:
+        in_gaps = False  # under an "## Evidence gaps" heading, gap lines are where they belong
         for line in p.body.splitlines():
-            if ABSENCE.search(line) and not line.lstrip("-* ").lower().startswith("evidence gap"):
+            if line.startswith("#"):
+                in_gaps = "evidence gap" in line.lower()
+                continue
+            if in_gaps or line.lstrip("-* ").lower().startswith("evidence gap"):
+                continue
+            if ABSENCE.search(line):
                 rel = p.path.relative_to(root).as_posix()
                 by_page[rel] = by_page.get(rel, 0) + 1
     rep.absence_lines = sum(by_page.values())
