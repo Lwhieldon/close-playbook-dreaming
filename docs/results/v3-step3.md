@@ -120,7 +120,7 @@ Evaluation cost: $0.65 at 12 turns, $1.79 for the sweep.
 - **Fix 3 recovered stage A's losses and holds level with step 2.** It's within a point of step 2 at
   every turn limit, a little ahead at 2 and 4 turns, and slightly cheaper per answer. Every interval
   overlaps. It's kept because a close team would use the watchlist and the problem-page status lines, and
-  the accuracy and cost cost nothing.
+  they cost nothing in accuracy or answer cost.
 - **The core result from step 2 stands.** At 2 tool turns the playbook scores 90.7% against raw search's
   85.5%, and 73% against 48% on synthesis. At 8 and 12 turns raw search scores 3 to 5 points higher, about
   one or two questions, within the intervals. The playbook answers for 40% to 50% of raw search's cost.
