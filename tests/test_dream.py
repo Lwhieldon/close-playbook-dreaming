@@ -77,7 +77,7 @@ def test_periods_in_order_and_erp_after_discussion(tmp_path):
 
     corpus = tx.load(config.CORPUS)
     chosen = tx.select(corpus, through="2026-07")
-    dream(FakeClient(script), chosen, tmp_path / "pb", tmp_path / "s", budget_usd=2.0, concurrency=4, on_event=None)
+    dream(FakeClient(script), chosen, tmp_path / "pb", tmp_path / "s", budget_usd=3.0, concurrency=4, on_event=None)
     by_name = {t.name: t for t in corpus}
     keys = [(by_name[n].period, by_name[n].kind == "erp") for n in order]
     assert keys == sorted(keys), "each period's discussion and policy first, then its ERP evidence"

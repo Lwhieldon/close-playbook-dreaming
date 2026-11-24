@@ -87,32 +87,38 @@ class UsageTracker:
         return {k: vars(v) for k, v in self.by_label.items()} | {"total_usd": round(self.total_usd, 4)}
 
 
+ANALYZER_RULES_FACTOR = 1.12  # the step 3 analyzer prompt (evidence gaps, causes) writes about 12% more
+
+
 def estimate_dream(
     transcript_chars: list[int],
     analyzer_model: str,
     organizer_model: str,
     memory_chars: int = 0,
-    organizer_turns: int = 30,
+    organizer_turns: int | None = None,
 ) -> tuple[float, str]:
     """A rough estimate for one dream, before any request is sent.
 
-    Calibrated on the two measured v3 step 2 dreams (114 sources over an empty playbook, and 15 sources over
-    a 146 KB playbook; Claude Haiku 5.5). An analyzer takes about 7 turns: it writes its source to the cache
+    Calibrated on the two measured v3 step 3 dreams (114 sources over an empty playbook, and 15 sources over
+    a 136 KB playbook; Claude Haiku 5.5). An analyzer takes about 7 turns: it writes its source to the cache
     once, then each turn re-reads the source plus the playbook pages it has opened. The playbook grows while
     the analyzers run, so they are priced as if it had already grown by a quarter of the new sources.
 
     The organizer starts from the pages this dream touched (more when the dream was large) and its context
     grows each turn as it reads and edits pages, so late turns can cross 100,000 tokens and pay Haiku's
-    long-prompt rates. Since it gets the list of touched pages it has used about 30 turns; it is priced turn
-    by turn.
+    long-prompt rates. It takes more turns after a larger dream (about 42 after 114 sources, 27 after 15);
+    it is priced turn by turn.
     """
     total = 0.0
+    if organizer_turns is None:
+        organizer_turns = round(25 + 0.15 * len(transcript_chars))
     source_tokens = sum(transcript_chars) / CHARS_PER_TOKEN
     growing = memory_chars + 0.25 * sum(transcript_chars)  # the playbook as it grows during the dream
     for chars in transcript_chars:
         ctx = chars / CHARS_PER_TOKEN + 6_000 + 0.3 * growing / CHARS_PER_TOKEN
         a = prices_for(analyzer_model, int(ctx + 15_000))
-        total += ((ctx + 30_000) * a["cache_write"] + 7 * (ctx + 15_000) * a["cache_read"] + 13_000 * a["output"]) / 1e6
+        turn_cost = (ctx + 30_000) * a["cache_write"] + 7 * (ctx + 15_000) * a["cache_read"] + 13_000 * a["output"]
+        total += ANALYZER_RULES_FACTOR * turn_cost / 1e6
     start = 6_000 + 0.235 * source_tokens + 0.29 * memory_chars / CHARS_PER_TOKEN
     step = 5_500 + 0.015 * source_tokens  # tokens added to the context per organizer turn
     for turn in range(organizer_turns):
@@ -122,6 +128,6 @@ def estimate_dream(
     text = (
         f"Estimate: {len(transcript_chars)} sources, {sum(transcript_chars):,} characters, analyzer "
         f"{analyzer_model}, organizer {organizer_model}: about ${total:.2f} (list price; calibrated on two "
-        "measured dreams, which came within 5% of it)"
+        "measured dreams, which came within 4% of it)"
     )
     return total, text
