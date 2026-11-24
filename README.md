@@ -38,18 +38,22 @@ and with realistic data and files an organization leverages in their daily opera
 ## The scenario
 
 Tarnwell Industries is a fictional pump and valve manufacturer with three legal entities, called company codes in
-SAP (1000 United States, 2000 Germany, 3000 Mexico), and five plants. The corpus for the month-end close playbook
-covers **six closes, May through October 2026**: 53 files, about 275 KB.
+SAP (1000 United States, 2000 Germany, 3000 Mexico), and 20 plants. One plant stops production in March and a new
+one goes live in October. The corpus for the month-end close playbook covers **twelve closes, November 2025 through
+October 2026**, including the 2025 year end: 129 files, about 979,000 characters.
 
 ```
 data/corpus/
-  uploads/              17 Teams meeting transcripts (.vtt): kickoffs, close reviews, standups,
-                        intercompany syncs    "Close Review - October 2026 Close - 2026-11-06.vtt"
-  erp/                  26 exports (.csv): journal entry register, reconciliation status, open items in the
-                        goods received / invoice received clearing account, purchase price variance,
-                        intercompany matching, master data change log    "JE_Register_2026-08.csv"
-  policies/             5 memos: close calendar, close owners, accrual policy FIN-POL-014, intercompany
-                        cutoff notice, treasury exchange rate memo TRS-2026-07
+  uploads/              30 Teams meeting transcripts (.vtt): kickoffs, close reviews, standups, intercompany
+                        syncs, year-end count results    "Close Review - October 2026 Close - 2026-11-06.vtt"
+  erp/                  86 exports in the formats a close team gets: Excel (.xlsx) journal entry registers,
+                        reconciliation status, inventory and production order variance; CSV intercompany
+                        matching, purchase price variance and master data change logs; fixed-width SAP
+                        spool lists and background job logs (.txt); BAI2 bank statements (.dat)
+                        "JE_Register_2026-08.xlsx"
+  policies/             8 memos and procedures (.pdf, .docx): close calendars, close owners, year-end
+                        instructions, a plant wind-down, accrual policy FIN-POL-014, intercompany cutoff
+                        notice, treasury exchange rate memo TRS-2026-07
   assistant-sessions/   5 close-assistant sessions, named by session id    "sesn_01af9f260e...txt"
 ```
 
@@ -127,7 +131,7 @@ pytest -q && python scripts/audit_data.py    # tests and data audit
 The demo (each paid command prints an estimate and asks first; `--budget` is a hard ceiling):
 
 ```bash
-close-dreamer dream --through 2026-09        # 1. after the September close: build the playbook from May-Sep
+close-dreamer dream --through 2026-09        # 1. after the September close: build the playbook from Nov 2025-Sep 2026
 close-dreamer dream --through 2026-10        # 2. after the October close: only October is new; update in place
 close-dreamer diff                           #    what the October dream changed
 close-dreamer lint                           #    shape and safety checks
@@ -141,8 +145,8 @@ Or follow the labs in `notebooks/`:
 | Lab | What it shows | Cost |
 |---|---|---|
 | [01 Explore the record](notebooks/01_explore_the_record.ipynb) | Why the raw record is not memory | free |
-| [02 Dream locally](notebooks/02_dream_locally.ipynb) | Two dreams and the diff between them | ~$0.30-0.80 |
-| [03 Evaluate](notebooks/03_evaluate.ipynb) | Does the playbook help, with and without a turn limit? | ~$0.60-1.50 |
+| [02 Dream locally](notebooks/02_dream_locally.ipynb) | Two dreams and the diff between them | ~$3.00-4.00 |
+| [03 Evaluate](notebooks/03_evaluate.ipynb) | Does the playbook help, with and without a turn limit? | ~$1.00-4.00 |
 | [04 Managed Agents mode](notebooks/04_managed_agents_mode.ipynb) | The production pattern from the cookbook | ~$0.50-1.50 |
 
 Costs are at list price with the default models (Claude Haiku 5.5 for analyzers, organizer and answers; Claude Sonnet
@@ -150,17 +154,48 @@ Costs are at list price with the default models (Claude Haiku 5.5 for analyzers,
 
 ## Results
 
-32 questions a close team would ask at the start of the November close, answered by the same model with different
-memory and graded against the current answer (`data/eval_questions.yaml`). Question types include history ("how
-has the accrual threshold changed?"), evidence only the ERP can answer ("was the reclassification entry posted?"),
-and synthesis with nothing to search for ("what should we watch for in January?").
+36 questions a close team would ask at the start of the November 2026 close, answered by the same model (Claude
+Haiku 5.5) with different memory and graded against key points by a judge (Claude Sonnet 5.5). An answer that gives
+a superseded rule as current scores zero. Question types include history ("how has the accrual threshold changed?"),
+evidence only the ERP can answer ("was the reclassification entry posted?"), and synthesis with nothing to search
+for ("what should we watch for in January?"). Four more held-out questions, written before the last round of prompt
+changes, check that tuning didn't help the 36 at the expense of the rest (`data/eval_questions.yaml`).
 
-<!-- RESULTS: filled in from `close-dreamer evaluate` output -->
+<!-- RESULTS: from `close-dreamer evaluate`; details in docs/results/v3-step3.md -->
 | Question type | No memory | Raw record | Playbook | Playbook + record |
 |---|---|---|---|---|
-| _tbd_ | | | | |
+| Buried detail | 0% | 98% | 95% | 95% |
+| Evidence | 0% | 100% | 94% | 85% |
+| History | 0% | 100% | 100% | 100% |
+| Integrity | 33% | 92% | 83% | 92% |
+| Process | 10% | 100% | 97% | 97% |
+| Recurring trap | 7% | 91% | 79% | 79% |
+| Stale fact | 0% | 93% | 100% | 100% |
+| Synthesis | 0% | 83% | 70% | 73% |
+| **All, 12 tool turns** | **5%** | **94%** | **90%** | **91%** |
 
-Turn-limited run (3 tool turns): _tbd_. Dream cost: _tbd_. One run of 32 questions: illustrative, not a benchmark.
+With fewer tool turns, raw search has to find the right files in the record each time; the playbook starts from a
+short index:
+
+| Tool turns | Raw record | Playbook | Answer cost, playbook vs raw record |
+|---|---|---|---|
+| 2 | 85% (synthesis 48%) | **91%** (synthesis 73%) | $0.077 vs $0.125 |
+| 4 | 91% | **92%** | $0.059 vs $0.153 |
+| 8 | 96% | 91% | $0.063 vs $0.176 |
+| 12 | 94% | 90% | $0.082 vs $0.187 |
+
+- **Accuracy is a statistical tie** at every turn limit (each interval is about plus or minus 5 points; one question
+  is about 3 points).
+- **The playbook holds up when the assistant can only take a few steps**, and answers for 40% to 50% of what
+  searching the raw record costs. It is 181 KB, 19% of the record it covers.
+- **Dreaming the twelve closes cost $3.73** (two dreams at list price). Lint found no leaked credential and no copied
+  injected instruction.
+- **Synthesis is the playbook's weak spot (70%).** The facts are in the pages but not always where an answer looks
+  first. One attempt to fix it with a watchlist page made things worse before a second attempt recovered; the
+  write-up explains why.
+
+One run per condition: read these as the shape of the effect, not its size. Every version's results, including the
+failed attempt, are in [docs/results](docs/results/README.md).
 
 ## Repository layout
 
@@ -169,7 +204,7 @@ data/
   corpus/                the close record (generated, committed)
   manifest.yaml          readable keys for corpus files (outside the corpus on purpose)
   ground_truth.yaml      facts with valid-from dates and what superseded them
-  eval_questions.yaml    32 questions with expected current answers
+  eval_questions.yaml    40 questions (36 scored, 4 held out) with expected current answers
 scripts/
   build_corpus.py        writes data/corpus/ (rerun to regenerate)
   corpus_meetings.py     meeting content; corpus_erp.py ERP exports; corpus_policies.py memos;
@@ -202,8 +237,8 @@ tests/                   pytest with a scripted fake client (no API key needed)
 
 ## Limitations
 
-- Synthetic data, six closes, 275 KB. A real close record is far larger and messier.
-- The evaluation is one run of 32 questions with an LLM judge. Use it to see the shape of the effect, not its size.
+- Synthetic data, twelve closes, about 1 MB. A real close record is far larger and messier.
+- The evaluation is one run of 36 questions with an LLM judge. Use it to see the shape of the effect, not its size.
 - A dream is only as good as its sources and prompts. Facts carry dates and sources so a reader can check them.
 
 ## Credits and license
